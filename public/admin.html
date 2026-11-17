@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Create Customer</title>
+  <!-- Google Fonts: Playfair Display & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, html, body, input, select, button {
+      font-family: 'Playfair Display', 'Lora', Georgia, 'Times New Roman', serif;
+      -webkit-font-smoothing: antialiased;
+      box-sizing: border-box;
+    }
+    .body-font {
+      font-family: 'Lora', Georgia, serif;
+    }
+    body {
+      background-color: #f2f4f8;
+      margin: 0;
+      padding: 0;
+    }
+    input::placeholder {
+      font-family: 'Lora', Georgia, serif;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center bg-[#f2f4f8] py-5 px-3">
+
+  <!-- Floating Toast Notification -->
+  <div id="adminToast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden opacity-0 transition-all bg-[#1e2530] text-white text-[13px] px-4 py-2.5 rounded-full shadow-2xl font-bold flex items-center space-x-2 font-sans">
+    <span id="adminToastIcon">✓</span>
+    <span id="adminToastMsg">Status Updated</span>
+  </div>
+
+  <!-- Main View Container -->
+  <div class="w-full max-w-[720px] space-y-4">
+
+    <!-- Top Action Bar: Create Customer & Logout (Screenshot 2) -->
+    <div class="flex items-center justify-between px-1">
+      <h1 class="text-[26px] font-bold text-[#1a1a1a] tracking-tight">Create Customer</h1>
+      <button 
+        id="logoutBtn"
+        class="px-4 py-1.5 rounded-full bg-[#fde8e8] text-[#c81e1e] font-bold text-[14px] hover:bg-red-100 transition-colors shadow-sm cursor-pointer"
+      >
+        Logout
+      </button>
+    </div>
+
+    <!-- Main Card: Customer Information (Screenshot 2: Pure White Card) -->
+    <div class="bg-white rounded-[22px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 p-6 space-y-4">
+      
+      <!-- Section Title (Exact Screenshot 2: No divider line, pure bold serif) -->
+      <h2 class="text-[18px] font-bold text-[#1a1a1a]">Customer Information</h2>
+
+      <form id="createCustomerForm" class="space-y-4">
+
+        <!-- ========================================================================= -->
+        <!-- 1. UNIFIED SINGLE SELECTOR BOX: APP NAME & APP LOGO ADJUST TOGETHER -->
+        <!-- App Name on Left Side of Box, App Logo on Right Side of the same Box -->
+        <!-- ========================================================================= -->
+        <div>
+          <label class="block text-[15px] font-bold text-[#1a1a1a] mb-1.5 flex items-center justify-between" for="appSelectorBtn">
+            <span>App Name & Logo</span>
+            <span class="text-[12px] text-gray-400 font-sans font-normal" id="totalAppsCountText">2 available</span>
+          </label>
+          
+          <div class="relative" id="customAppPicker">
+            <!-- Hidden inputs for seamless form submission and reading -->
+            <input type="hidden" id="appName" name="appName" value="Zen Money">
+            <input type="hidden" id="appLogo" name="appLogo" value="/assets/zen-money.svg">
+            <input type="hidden" id="appSelectedId" value="zen-money">
+
+            <!-- The Single Trigger Box: Left = App Name, Right = App Logo -->
+            <button 
+              type="button" 
+              id="appSelectorBtn"
+              class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] hover:border-[#4338ca] focus:outline-none focus:ring-2 focus:ring-[#4338ca]/20 text-[#1a1a1a] bg-white shadow-sm flex items-center justify-between transition-all cursor-pointer"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <!-- LEFT SIDE OF BOX: App Name -->
+              <div class="flex items-center space-x-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                <span id="triggerAppName" class="font-bold text-[16px] text-gray-900 tracking-tight">Zen Money</span>
+              </div>
+
+              <!-- RIGHT SIDE OF THE SAME BOX: App Logo + Dropdown Arrow -->
+              <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 p-0.5 flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <img id="triggerAppLogo" src="/assets/zen-money.svg" alt="App Logo" class="w-full h-full object-contain">
+                </div>
+                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" id="pickerChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+            </button>
+
+            <!-- Dropdown Options List: each row has App Name on left, App Logo on right -->
+            <div 
+              id="appPickerDropdown" 
+              class="hidden absolute left-0 right-0 top-full mt-1.5 z-40 bg-white rounded-2xl shadow-2xl border border-gray-200 divide-y divide-gray-100 max-h-64 overflow-y-auto"
+              role="listbox"
+            >
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- 2. ONE SINGLE BOX FOR: Add Name with logo, Edit Name or Logo, Remove Name with Logo -->
+        <!-- ========================================================================= -->
+        <div>
+          <div class="p-2.5 bg-[#f8fafc] border border-gray-200 rounded-2xl shadow-xs">
+            <div class="grid grid-cols-3 gap-2">
+              <!-- Add Name with logo -->
+              <button 
+                type="button" 
+                id="btnActionAddApp"
+                class="py-2.5 px-2 rounded-xl bg-[#edf1fe] hover:bg-[#e0e7ff] text-[#3543d8] font-bold text-[13px] flex items-center justify-center space-x-1.5 border border-indigo-100 transition-all active:scale-95 text-center shadow-xs cursor-pointer"
+                title="Add Name with Logo (File or URL)"
+              >
+                <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                <span class="hidden sm:inline truncate">Add Name with logo</span>
+                <span class="sm:hidden text-[12px] font-bold">Add Logo</span>
+              </button>
+
+              <!-- Edit Name or Logo -->
+              <button 
+                type="button" 
+                id="btnActionEditApp"
+                class="py-2.5 px-2 rounded-xl bg-white hover:bg-gray-100 text-gray-700 font-bold text-[13px] flex items-center justify-center space-x-1.5 border border-gray-300 transition-all active:scale-95 text-center shadow-xs cursor-pointer"
+                title="Edit selected Name or Logo"
+              >
+                <svg class="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                <span class="hidden sm:inline truncate">Edit Name / Logo</span>
+                <span class="sm:hidden text-[12px] font-bold">Edit</span>
+              </button>
+
+              <!-- Remove Name with Logo -->
+              <button 
+                type="button" 
+                id="btnActionRemoveApp"
+                class="py-2.5 px-2 rounded-xl bg-[#fde8e8] hover:bg-red-100 text-[#c81e1e] font-bold text-[13px] flex items-center justify-center space-x-1.5 border border-red-200 transition-all active:scale-95 text-center shadow-xs cursor-pointer"
+                title="Remove selected Name with Logo from saved list"
+              >
+                <svg class="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <span class="hidden sm:inline truncate">Remove Logo</span>
+                <span class="sm:hidden text-[12px] font-bold">Remove</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- 3. PREVIEW BOX / SLOT: SELECTED APP NAME AND APP LOGO TO SHOW ON DASHBOARD -->
+        <!-- ========================================================================= -->
+        <div>
+          <div class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-[#edf2fe] via-white to-[#f8faff] border border-indigo-200/70 flex items-center justify-between shadow-xs">
+            <div class="flex items-center space-x-3.5 min-w-0">
+              <div class="w-14 h-14 rounded-2xl bg-white p-1.5 border border-indigo-100 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0" style="width: 56px; height: 56px; min-width: 56px;">
+                <img id="dashboardPreviewLogo" src="/assets/zen-money.svg" alt="Active Logo" class="w-full h-full object-contain">
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center space-x-1.5 mb-0.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 font-sans">Active App Preview</span>
+                </div>
+                <div id="dashboardPreviewName" class="font-bold text-[18px] text-gray-900 tracking-tight truncate">
+                  Zen Money
+                </div>
+                <div id="dashboardPreviewSource" class="text-[11px] text-gray-500 font-mono truncate max-w-[210px]">
+                  /assets/zen-money.svg
+                </div>
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 pl-2">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800 font-sans">
+                ✓ Ready to Use
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- AUTO CALCULATOR ON / OFF TOGGLE OPTION -->
+        <!-- ========================================================================= -->
+        <div id="autoCalcContainer" class="p-3.5 sm:p-4 rounded-2xl border transition-all duration-200" style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-color: #86efac;">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2.5">
+              <span id="autoCalcStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[14.5px] font-extrabold text-gray-900 flex items-center gap-1.5 font-sans">
+                    ⚡ Auto Calculator
+                  </span>
+                  <span id="autoCalcBadge" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    ACTIVE (ON)
+                  </span>
+                </div>
+                <p id="autoCalcSubtext" class="text-[11.5px] text-gray-600 mt-0.5 font-sans leading-tight">
+                  Auto-syncs 7-Day Term (<span class="font-bold text-emerald-800">02-Nov ↔ 08-Nov</span>), 60% Received Amount, Overdue Days, 7% Daily Late Fee & Remaining Amount.
+                </p>
+              </div>
+            </div>
+            
+            <!-- Segmented ON / OFF Toggle Buttons -->
+            <div class="inline-flex items-center p-1 bg-white rounded-xl border border-gray-200 shadow-xs select-none">
+              <button 
+                type="button" 
+                id="autoCalcOnBtn" 
+                onclick="setAutoCalculator(true)"
+                class="px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer bg-emerald-600 text-white shadow-xs"
+              >
+                ON
+              </button>
+              <button 
+                type="button" 
+                id="autoCalcOffBtn" 
+                onclick="setAutoCalculator(false)"
+                class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-gray-500 hover:text-gray-800 bg-transparent"
+              >
+                OFF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Name -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[15px] font-bold text-[#1a1a1a]" for="customerName">
+              Customer Name
+            </label>
+            <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[11px] font-bold select-none">
+              <button type="button" id="visBtn_customerName_show" onclick="setFieldVisibility('customerName', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_customerName_hide" onclick="setFieldVisibility('customerName', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="text" 
+            id="customerName" 
+            name="customerName" 
+            placeholder="Customer Name"
+            value="BHAVIK KAMLESH SANGHVI"
+            required
+            class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none focus:border-[#4338ca] text-[#1a1a1a] text-[15px] bg-white shadow-sm"
+          >
+        </div>
+
+        <!-- Bank Address -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[15px] font-bold text-[#1a1a1a]" for="bankAddress">
+              Bank Address
+            </label>
+            <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[11px] font-bold select-none">
+              <button type="button" id="visBtn_bankAddress_show" onclick="setFieldVisibility('bankAddress', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_bankAddress_hide" onclick="setFieldVisibility('bankAddress', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="text" 
+            id="bankAddress" 
+            name="bankAddress" 
+            value="HDFC BANK, ANDHERI (W), MUMBAI - 746388853(ifsc:UHDK84738)" 
+            class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none focus:border-[#4338ca] text-[#1a1a1a] text-[13px] bg-white shadow-sm"
+          >
+        </div>
+
+        <!-- Loan Amount -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[15px] font-bold text-[#1a1a1a]" for="loanAmount">
+              Loan Amount
+            </label>
+            <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[11px] font-bold select-none">
+              <button type="button" id="visBtn_loanAmount_show" onclick="setFieldVisibility('loanAmount', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_loanAmount_hide" onclick="setFieldVisibility('loanAmount', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="number" 
+            id="loanAmount" 
+            name="loanAmount" 
+            value="11000" 
+            required
+            class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none focus:border-[#4338ca] text-[#1a1a1a] text-[15px] bg-white font-bold shadow-sm"
+          >
+        </div>
+
+        <!-- Received Amount (Auto 60% of Loan Amount) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2">
+              <label class="block text-[15px] font-bold text-[#1a1a1a]" for="receivedAmount">
+                Received amount
+              </label>
+              <span id="calcReceivedBadge" class="text-[10px] font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
+                ⚡ 60% of Loan
+              </span>
+            </div>
+            <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[11px] font-bold select-none">
+              <button type="button" id="visBtn_receivedAmount_show" onclick="setFieldVisibility('receivedAmount', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_receivedAmount_hide" onclick="setFieldVisibility('receivedAmount', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="number" 
+            id="receivedAmount" 
+            name="receivedAmount" 
+            value="6600" 
+            class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none focus:border-[#4338ca] text-[#1a1a1a] text-[15px] bg-gray-50 font-semibold shadow-sm"
+          >
+          <p class="text-[12px] text-gray-500 mt-1 font-sans">40% interest deducted, Received Amount is 60% of Loan Amount.</p>
+        </div>
+
+        <!-- Amount Paid (Partial Payment Input) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2">
+              <label class="block text-[15px] font-bold text-[#1a1a1a]" for="amountPaid">
+                Amount Paid
+              </label>
+              <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                Partial Payment
+              </span>
+            </div>
+            <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[11px] font-bold select-none">
+              <button type="button" id="visBtn_amountPaid_show" onclick="setFieldVisibility('amountPaid', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_amountPaid_hide" onclick="setFieldVisibility('amountPaid', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="number" 
+            id="amountPaid" 
+            name="amountPaid" 
+            value="0" 
+            class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none text-[#1a1a1a] text-[15px] bg-white shadow-sm"
+          >
+          <p class="text-[12px] text-gray-500 mt-1 font-sans">IF any customer paid partially, enter the paid amount here.</p>
+        </div>
+
+        <!-- Dates (7-Day Term: Amount Received Date & Due Date) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2">
+              <label class="block text-[15px] font-bold text-[#1a1a1a]">
+                Dates
+              </label>
+              <span class="text-[10px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                7-Day Term (02-Nov ↔ 08-Nov)
+              </span>
+            </div>
+            <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[11px] font-bold select-none">
+              <button type="button" id="visBtn_dates_show" onclick="setFieldVisibility('dates', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_dates_hide" onclick="setFieldVisibility('dates', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[12px] font-semibold text-gray-600 mb-1" for="amountReceivedDate">Received Date (Start)</label>
+              <input 
+                type="text" 
+                id="amountReceivedDate" 
+                name="amountReceivedDate" 
+                value="02-Nov-2026" 
+                placeholder="02-Nov-2026"
+                class="w-full px-3 py-2.5 rounded-xl border border-[#d1d5db] focus:outline-none text-[#1a1a1a] text-[14px] bg-white shadow-sm font-medium"
+              >
+            </div>
+            <div>
+              <label class="block text-[12px] font-semibold text-gray-600 mb-1" for="dueDate">Due Date (7-Day Term)</label>
+              <input 
+                type="text" 
+                id="dueDate" 
+                name="dueDate" 
+                value="08-Nov-2026" 
+                placeholder="08-Nov-2026"
+                class="w-full px-3 py-2.5 rounded-xl border border-[#d1d5db] focus:outline-none text-[#1a1a1a] text-[14px] bg-white shadow-sm font-medium"
+              >
+            </div>
+          </div>
+          <p class="text-[12px] text-gray-500 mt-1 font-sans">7-Day Loan Term: <span class="font-semibold text-indigo-700">02-Nov-2026 to 08-Nov-2026</span>. When Auto Calculator is ON, entering either date auto-syncs the other.</p>
+        </div>
+
+        <!-- Overdue Days & Late Fee -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-[14px] font-bold text-[#1a1a1a]" for="overdueDays">
+                Over Due (Days)
+              </label>
+              <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[10.5px] font-bold select-none">
+                <button type="button" id="visBtn_overdueDays_show" onclick="setFieldVisibility('overdueDays', true)" class="px-2 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[10.5px]">SHOW</button>
+                <button type="button" id="visBtn_overdueDays_hide" onclick="setFieldVisibility('overdueDays', false)" class="px-2 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[10.5px] bg-transparent">HIDE</button>
+              </div>
+            </div>
+            <input 
+              type="number" 
+              id="overdueDays" 
+              name="overdueDays" 
+              value="2" 
+              class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none text-[#be185d] font-bold text-[15px] bg-white shadow-sm"
+            >
+            <p class="text-[11px] text-gray-400 mt-1">Counts delay days after Due Date</p>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center gap-1.5">
+                <label class="block text-[14px] font-bold text-[#1a1a1a]" for="lateFee">
+                  Late Fee (₹)
+                </label>
+                <span id="calcLateFeeBadge" class="text-[10px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded">
+                  7% / day
+                </span>
+              </div>
+              <div class="inline-flex items-center p-0.5 bg-gray-100 rounded-lg border border-gray-200 text-[10.5px] font-bold select-none">
+                <button type="button" id="visBtn_lateFee_show" onclick="setFieldVisibility('lateFee', true)" class="px-2 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[10.5px]">SHOW</button>
+                <button type="button" id="visBtn_lateFee_hide" onclick="setFieldVisibility('lateFee', false)" class="px-2 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[10.5px] bg-transparent">HIDE</button>
+              </div>
+            </div>
+            <input 
+              type="number" 
+              id="lateFee" 
+              name="lateFee" 
+              value="1540" 
+              class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none text-[#1a1a1a] font-bold text-[15px] bg-white shadow-sm"
+            >
+            <p class="text-[11px] text-gray-400 mt-1">7% per day on unpaid loan balance</p>
+          </div>
+        </div>
+
+        <!-- Remaining Amount (Formula: {(Loan Amount + Late Fee) - Amount Paid}) -->
+        <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <label class="block text-[15px] font-bold text-[#1a1a1a]" for="repaymentAmount">
+                Remaining Amount
+              </label>
+              <span class="text-[10px] font-extrabold text-indigo-700 bg-indigo-100/80 px-2 py-0.5 rounded-full">
+                Auto Calculated
+              </span>
+            </div>
+            <div class="inline-flex items-center p-0.5 bg-white rounded-lg border border-gray-200 text-[11px] font-bold select-none shadow-xs">
+              <button type="button" id="visBtn_remainingAmount_show" onclick="setFieldVisibility('remainingAmount', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_remainingAmount_hide" onclick="setFieldVisibility('remainingAmount', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="number" 
+            id="repaymentAmount" 
+            name="repaymentAmount" 
+            value="12540" 
+            required
+            class="w-full px-4 py-3 rounded-xl border border-[#d1d5db] focus:outline-none focus:border-[#4338ca] text-[#283593] text-[17px] bg-white font-extrabold shadow-sm"
+          >
+          <div class="p-2.5 rounded-xl bg-white/90 border border-indigo-200 text-[11.5px] text-gray-700 space-y-1">
+            <div class="flex items-center justify-between font-mono">
+              <span class="font-sans font-semibold text-gray-500">Formula: (Loan + Late Fee) - Paid</span>
+              <span id="calcFormulaBreakdown" class="font-bold text-gray-900">(11,000 + 1,540) - 0 = ₹12,540</span>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-gray-100">
+              <span class="font-sans font-bold text-emerald-800 flex items-center gap-1">🔄 Renew Amount (40% of Remaining):</span>
+              <span id="calcRenewPreviewVal" class="font-bold font-mono text-emerald-700 text-[13px]">₹ 5,016</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- UPI ID Setting -->
+        <div class="p-4 bg-purple-50/70 border border-purple-200 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-[14px] font-bold text-purple-900" for="upiId">
+              Payment UPI ID (Generating QR & Copy Option)
+            </label>
+            <div class="inline-flex items-center p-0.5 bg-white rounded-lg border border-purple-200 text-[11px] font-bold select-none shadow-xs">
+              <button type="button" id="visBtn_upiId_show" onclick="setFieldVisibility('upiId', true)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold text-[11px]">SHOW</button>
+              <button type="button" id="visBtn_upiId_hide" onclick="setFieldVisibility('upiId', false)" class="px-2.5 py-0.5 rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold text-[11px] bg-transparent">HIDE</button>
+            </div>
+          </div>
+          <input 
+            type="text" 
+            id="upiId" 
+            name="upiId" 
+            value="Q609224859@ybl" 
+            required
+            class="w-full px-3.5 py-2.5 rounded-xl border border-purple-300 focus:outline-none text-gray-800 text-sm bg-white font-mono shadow-sm"
+          >
+          <p class="body-font text-[12px] text-gray-500">কাস্টমার পেজে এই UPI ঠিকানার QR কোড ডায়নামিকালি তৈরি হবে।</p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-3">
+          <button 
+            type="submit" 
+            id="submitCustomerBtn"
+            class="w-full py-4 px-6 rounded-full bg-[#3442d9] hover:bg-[#2835b8] text-white font-bold text-[18px] shadow-lg shadow-indigo-500/20 transition-all active:scale-[0.98] text-center"
+          >
+            Create Customer & Generate Link
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Generated Link Result Card -->
+    <div id="newLinkCard" class="hidden bg-white border-2 border-indigo-500 rounded-[22px] p-5 shadow-xl space-y-3">
+      <div class="flex items-center space-x-2 text-indigo-700 font-bold text-[16px]">
+        <span>✓</span>
+        <span>Customer Link Created Successfully!</span>
+      </div>
+      <p class="body-font text-xs text-gray-600">নিচের লিংকটি কপি করে কাস্টমারকে শেয়ার করুন:</p>
+      
+      <div class="flex items-center bg-gray-50 border border-gray-200 rounded-2xl p-2">
+        <input 
+          type="text" 
+          id="generatedLinkInput" 
+          readonly 
+          class="flex-1 bg-transparent px-2 text-xs text-gray-800 font-mono select-all focus:outline-none"
+        >
+        <button 
+          id="copyGeneratedLinkBtn"
+          class="px-3.5 py-2 bg-[#3442d9] text-white text-xs font-bold rounded-xl shadow transition-all active:scale-95"
+        >
+          Copy Link
+        </button>
+      </div>
+
+      <div class="text-right">
+        <a 
+          id="openGeneratedLinkBtn" 
+          href="#" 
+          target="_blank"
+          class="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded-xl inline-flex items-center space-x-1"
+        >
+          <span>Open Customer Page ↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Customer Management Table -->
+    <div class="bg-white rounded-[22px] shadow-sm border border-gray-100 p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-[17px] font-bold text-[#1a1a1a]">All Customers</h2>
+          <p class="text-[12px] text-gray-500 font-sans">Manage customer links, review UTR submissions & select payment verification results</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Live Auto-Sync
+          </span>
+          <button onclick="loadCustomers()" class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-200 transition-all">Refresh</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200 text-gray-500 uppercase font-bold tracking-wider bg-gray-50/70">
+              <th class="py-3 px-3">App</th>
+              <th class="py-3 px-3">Customer</th>
+              <th class="py-3 px-3">Amount</th>
+              <th class="py-3 px-3 min-w-[280px]">UTR & Result Control</th>
+              <th class="py-3 px-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="customersTableBody" class="divide-y divide-gray-100">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 1: ADD NAME WITH LOGO (Includes Upload & URL options) -->
+  <!-- ========================================================================= -->
+  <div id="addAppNameLogoModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+        <div>
+          <h3 class="font-bold text-gray-900 text-lg">Add Name with Logo</h3>
+          <p class="text-xs text-gray-500 font-sans">Set App Name and choose logo via file or URL</p>
+        </div>
+        <button id="closeAddAppModalBtn" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer">✕</button>
+      </div>
+
+      <form id="addAppForm" class="space-y-4">
+        <!-- App Name Input -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1" for="modalNewAppName">
+            App Name
+          </label>
+          <input 
+            type="text" 
+            id="modalNewAppName" 
+            placeholder="e.g. Speed Cash, Zen Loan, PayRupee" 
+            required
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4338ca] text-sm"
+          >
+        </div>
+
+        <!-- Logo Input Mode Switcher (File vs URL) -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1.5">
+            App Logo Source
+          </label>
+          <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold mb-3">
+            <button 
+              type="button" 
+              id="addTabUploadBtn"
+              class="flex-1 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition-all text-center cursor-pointer"
+            >
+              Upload Image
+            </button>
+            <button 
+              type="button" 
+              id="addTabUrlBtn"
+              class="flex-1 py-1.5 rounded-lg text-gray-500 hover:text-gray-900 transition-all text-center cursor-pointer"
+            >
+              Logo from URL
+            </button>
+          </div>
+
+          <!-- Option 1: File Upload -->
+          <div id="addSectionUpload" class="space-y-1">
+            <input 
+              type="file" 
+              id="modalNewLogoFile" 
+              accept="image/*" 
+              class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-gray-50 cursor-pointer"
+            >
+            <p class="text-[11px] text-gray-400 font-sans">PNG, JPG, SVG up to 5MB</p>
+          </div>
+
+          <!-- Option 2: URL Input ("extra option to set logo using URL") -->
+          <div id="addSectionUrl" class="hidden space-y-1">
+            <input 
+              type="text" 
+              id="modalNewLogoUrl" 
+              placeholder="https://example.com/logo.png or /assets/zen-money.svg" 
+              class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#4338ca] font-mono"
+            >
+            <p class="text-[11px] text-gray-400 font-sans">Direct link to image (SVG, PNG, JPG, or web path)</p>
+          </div>
+        </div>
+
+        <!-- Live Preview inside Modal -->
+        <div>
+          <span class="block text-xs font-bold text-gray-500 mb-1">Logo Preview</span>
+          <div class="flex items-center space-x-3 p-2.5 rounded-xl bg-gray-50 border border-gray-200">
+            <div class="w-10 h-10 rounded-lg bg-white p-0.5 border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <img id="addModalPreviewImg" src="/assets/zen-money.svg" alt="Preview" class="w-full h-full object-contain">
+            </div>
+            <div class="text-xs font-bold text-gray-800 truncate" id="addModalPreviewText">
+              Preview will appear here
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 flex space-x-3">
+          <button 
+            type="button" 
+            id="cancelAddAppBtn"
+            class="w-1/2 py-2.5 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            id="saveAddAppBtn"
+            class="w-1/2 py-2.5 rounded-xl bg-[#3442d9] hover:bg-[#2835b8] text-white font-bold text-sm shadow transition-all active:scale-95 cursor-pointer"
+          >
+            Save & Add to List
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 2: EDIT NAME OR LOGO (Edit active App Name or change file/URL) -->
+  <!-- ========================================================================= -->
+  <div id="editAppNameLogoModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+        <div>
+          <h3 class="font-bold text-gray-900 text-lg">Edit Name or Logo</h3>
+          <p class="text-xs text-gray-500 font-sans">Modify selected App Name and/or Logo</p>
+        </div>
+        <button id="closeEditAppModalBtn" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer">✕</button>
+      </div>
+
+      <form id="editAppForm" class="space-y-4">
+        <!-- Edit App Name -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1" for="modalEditAppName">
+            App Name
+          </label>
+          <input 
+            type="text" 
+            id="modalEditAppName" 
+            required
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-[#4338ca] text-sm"
+          >
+        </div>
+
+        <!-- Mode Switcher -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1.5">
+            Update Logo (Optional)
+          </label>
+          <div class="flex bg-gray-100 p-1 rounded-xl text-xs font-bold mb-3">
+            <button 
+              type="button" 
+              id="editTabUploadBtn"
+              class="flex-1 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition-all text-center cursor-pointer"
+            >
+              Upload New File
+            </button>
+            <button 
+              type="button" 
+              id="editTabUrlBtn"
+              class="flex-1 py-1.5 rounded-lg text-gray-500 hover:text-gray-900 transition-all text-center cursor-pointer"
+            >
+              Edit Logo URL
+            </button>
+          </div>
+
+          <div id="editSectionUpload" class="space-y-1">
+            <input 
+              type="file" 
+              id="modalEditLogoFile" 
+              accept="image/*" 
+              class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-gray-50 cursor-pointer"
+            >
+            <p class="text-[11px] text-gray-400 font-sans">Leave empty to keep current logo image</p>
+          </div>
+
+          <div id="editSectionUrl" class="hidden space-y-1">
+            <input 
+              type="text" 
+              id="modalEditLogoUrl" 
+              placeholder="https://example.com/logo.png or /assets/zen-money.svg" 
+              class="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#4338ca] font-mono"
+            >
+          </div>
+        </div>
+
+        <!-- Live Preview inside Edit Modal -->
+        <div>
+          <span class="block text-xs font-bold text-gray-500 mb-1">Current / Updated Logo</span>
+          <div class="flex items-center space-x-3 p-2.5 rounded-xl bg-gray-50 border border-gray-200">
+            <div class="w-10 h-10 rounded-lg bg-white p-0.5 border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <img id="editModalPreviewImg" src="/assets/zen-money.svg" alt="Preview" class="w-full h-full object-contain">
+            </div>
+            <div class="text-xs font-bold text-gray-800 truncate" id="editModalPreviewText">
+              Zen Money
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 flex space-x-3">
+          <button 
+            type="button" 
+            id="cancelEditAppBtn"
+            class="w-1/2 py-2.5 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 text-sm cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            id="saveEditAppBtn"
+            class="w-1/2 py-2.5 rounded-xl bg-[#3442d9] hover:bg-[#2835b8] text-white font-bold text-sm shadow transition-all active:scale-95 cursor-pointer"
+          >
+            Update & Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let allLogos = [];
+    let selectedAppId = null;
+    let addLogoMode = 'upload'; // 'upload' or 'url'
+    let editLogoMode = 'upload';
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        if (!data.loggedIn) window.location.href = '/login';
+      } catch (err) {
+        window.location.href = '/login';
+      }
+    }
+    checkAuth();
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/login';
+    });
+
+    // =========================================================================
+    // LOAD & RENDER APP PROFILES (Unified Single Selector & Preview Slot)
+    // =========================================================================
+    async function loadLogos(preferredSelectId = null) {
+      try {
+        const res = await fetch('/api/logos');
+        const data = await res.json();
+        allLogos = data.logos || [];
+
+        const countEl = document.getElementById('totalAppsCountText');
+        if (countEl) {
+          countEl.textContent = `${allLogos.length} available`;
+        }
+
+        if (allLogos.length === 0) {
+          allLogos = [{ id: 'zen-money', name: 'Zen Money', icon: '/assets/zen-money.svg' }];
+        }
+
+        // Determine which app should be active
+        if (preferredSelectId && allLogos.some(l => l.id === preferredSelectId)) {
+          selectedAppId = preferredSelectId;
+        } else if (!selectedAppId || !allLogos.some(l => l.id === selectedAppId)) {
+          selectedAppId = allLogos[0].id;
+        }
+
+        renderAppSelector();
+      } catch (err) {
+        console.error('Failed to load logos:', err);
+      }
+    }
+
+    function getActiveApp() {
+      return allLogos.find(l => l.id === selectedAppId) || allLogos[0] || {
+        id: 'zen-money',
+        name: 'Zen Money',
+        icon: '/assets/zen-money.svg'
+      };
+    }
+
+    function renderAppSelector() {
+      const active = getActiveApp();
+      selectedAppId = active.id;
+
+      // Update the Trigger Button: Left = App Name, Right = App Logo
+      const triggerName = document.getElementById('triggerAppName');
+      const triggerLogo = document.getElementById('triggerAppLogo');
+      if (triggerName) triggerName.textContent = active.name;
+      if (triggerLogo) triggerLogo.src = active.icon;
+
+      // Update Hidden Form Inputs so form submit and customers have exact values
+      const hiddenName = document.getElementById('appName');
+      const hiddenLogo = document.getElementById('appLogo');
+      const hiddenId = document.getElementById('appSelectedId');
+      if (hiddenName) hiddenName.value = active.name;
+      if (hiddenLogo) hiddenLogo.value = active.icon;
+      if (hiddenId) hiddenId.value = active.id;
+
+      // Update Preview Box / Slot on Dashboard
+      const previewName = document.getElementById('dashboardPreviewName');
+      const previewLogo = document.getElementById('dashboardPreviewLogo');
+      const previewSource = document.getElementById('dashboardPreviewSource');
+      if (previewName) previewName.textContent = active.name;
+      if (previewLogo) previewLogo.src = active.icon;
+      if (previewSource) previewSource.textContent = active.icon;
+
+      // Render Dropdown List (App Name on left, App Logo on right of each row)
+      const dropdown = document.getElementById('appPickerDropdown');
+      if (!dropdown) return;
+      dropdown.innerHTML = '';
+
+      allLogos.forEach(app => {
+        const isSelected = app.id === selectedAppId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `w-full px-4 py-3 flex items-center justify-between text-left transition-colors cursor-pointer ${
+          isSelected ? 'bg-indigo-50/80 text-indigo-900 font-bold' : 'hover:bg-gray-50 text-gray-800'
+        }`;
+        
+        btn.innerHTML = `
+          <!-- Left: App Name -->
+          <div class="flex items-center space-x-2.5">
+            <span class="w-2 h-2 rounded-full ${isSelected ? 'bg-indigo-600' : 'bg-gray-300'}"></span>
+            <span class="text-sm font-bold tracking-tight">${app.name}</span>
+            ${isSelected ? '<span class="text-[10px] uppercase tracking-wide bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-sans font-bold">Selected</span>' : ''}
+          </div>
+
+          <!-- Right: App Logo -->
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg overflow-hidden bg-white border border-gray-200 p-0.5 flex items-center justify-center flex-shrink-0 shadow-xs">
+              <img src="${app.icon}" alt="${app.name}" class="w-full h-full object-contain" onerror="this.src='/assets/zen-money.svg'">
+            </div>
+          </div>
+        `;
+
+        btn.addEventListener('click', () => {
+          selectApp(app.id);
+          closeDropdown();
+        });
+
+        dropdown.appendChild(btn);
+      });
+    }
+
+    function selectApp(id) {
+      selectedAppId = id;
+      renderAppSelector();
+    }
+
+    // Dropdown toggle & outside-click handling
+    const triggerBtn = document.getElementById('appSelectorBtn');
+    const dropdownMenu = document.getElementById('appPickerDropdown');
+    const chevronIcon = document.getElementById('pickerChevron');
+
+    function toggleDropdown() {
+      if (!dropdownMenu) return;
+      const isOpen = !dropdownMenu.classList.contains('hidden');
+      if (isOpen) {
+        closeDropdown();
+      } else {
+        openDropdown();
+      }
+    }
+
+    function openDropdown() {
+      if (!dropdownMenu) return;
+      dropdownMenu.classList.remove('hidden');
+      triggerBtn.setAttribute('aria-expanded', 'true');
+      if (chevronIcon) chevronIcon.classList.add('rotate-180');
+    }
+
+    function closeDropdown() {
+      if (!dropdownMenu) return;
+      dropdownMenu.classList.add('hidden');
+      triggerBtn.setAttribute('aria-expanded', 'false');
+      if (chevronIcon) chevronIcon.classList.remove('rotate-180');
+    }
+
+    if (triggerBtn) {
+      triggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown();
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      if (dropdownMenu && !dropdownMenu.contains(e.target) && !triggerBtn.contains(e.target)) {
+        closeDropdown();
+      }
+    });
+
+    // =========================================================================
+    // ACTION 1: ADD NAME WITH LOGO (Includes URL Option)
+    // =========================================================================
+    const addModal = document.getElementById('addAppNameLogoModal');
+    const openAddBtn = document.getElementById('btnActionAddApp');
+    const closeAddBtn = document.getElementById('closeAddAppModalBtn');
+    const cancelAddBtn = document.getElementById('cancelAddAppBtn');
+    const addTabUpload = document.getElementById('addTabUploadBtn');
+    const addTabUrl = document.getElementById('addTabUrlBtn');
+    const addSectionUpload = document.getElementById('addSectionUpload');
+    const addSectionUrl = document.getElementById('addSectionUrl');
+    const modalNewLogoFile = document.getElementById('modalNewLogoFile');
+    const modalNewLogoUrl = document.getElementById('modalNewLogoUrl');
+    const addModalPreviewImg = document.getElementById('addModalPreviewImg');
+    const addModalPreviewText = document.getElementById('addModalPreviewText');
+    const modalNewAppName = document.getElementById('modalNewAppName');
+
+    if (openAddBtn) {
+      openAddBtn.addEventListener('click', () => {
+        document.getElementById('addAppForm').reset();
+        addModalPreviewImg.src = '/assets/zen-money.svg';
+        addModalPreviewText.textContent = 'Preview will appear here';
+        setAddMode('upload');
+        addModal.classList.remove('hidden');
+        modalNewAppName.focus();
+      });
+    }
+
+    function closeAddModal() {
+      if (addModal) addModal.classList.add('hidden');
+    }
+    if (closeAddBtn) closeAddBtn.addEventListener('click', closeAddModal);
+    if (cancelAddBtn) cancelAddBtn.addEventListener('click', closeAddModal);
+
+    function setAddMode(mode) {
+      addLogoMode = mode;
+      if (mode === 'upload') {
+        addTabUpload.className = 'flex-1 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition-all text-center cursor-pointer';
+        addTabUrl.className = 'flex-1 py-1.5 rounded-lg text-gray-500 hover:text-gray-900 transition-all text-center cursor-pointer';
+        addSectionUpload.classList.remove('hidden');
+        addSectionUrl.classList.add('hidden');
+      } else {
+        addTabUrl.className = 'flex-1 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition-all text-center cursor-pointer';
+        addTabUpload.className = 'flex-1 py-1.5 rounded-lg text-gray-500 hover:text-gray-900 transition-all text-center cursor-pointer';
+        addSectionUrl.classList.remove('hidden');
+        addSectionUpload.classList.add('hidden');
+      }
+    }
+    if (addTabUpload) addTabUpload.addEventListener('click', () => setAddMode('upload'));
+    if (addTabUrl) addTabUrl.addEventListener('click', () => setAddMode('url'));
+
+    // Live preview on file select
+    if (modalNewLogoFile) {
+      modalNewLogoFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            addModalPreviewImg.src = ev.target.result;
+            addModalPreviewText.textContent = file.name;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Live preview on URL type
+    if (modalNewLogoUrl) {
+      modalNewLogoUrl.addEventListener('input', (e) => {
+        const url = e.target.value.trim();
+        if (url) {
+          addModalPreviewImg.src = url;
+          addModalPreviewText.textContent = url;
+        }
+      });
+    }
+
+    if (modalNewAppName) {
+      modalNewAppName.addEventListener('input', (e) => {
+        if (!modalNewLogoFile.files.length && !modalNewLogoUrl.value) {
+          addModalPreviewText.textContent = e.target.value.trim() || 'Preview will appear here';
+        }
+      });
+    }
+
+    // Save New App Profile
+    document.getElementById('addAppForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveAddAppBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerText = 'Saving...';
+
+      const appName = modalNewAppName.value.trim();
+      const formData = new FormData();
+      formData.append('appName', appName);
+
+      if (addLogoMode === 'upload') {
+        const file = modalNewLogoFile.files[0];
+        if (!file) {
+          alert('Please select an image file to upload or switch to URL option.');
+          saveBtn.disabled = false;
+          saveBtn.innerText = 'Save & Add to List';
+          return;
+        }
+        formData.append('logoFile', file);
+      } else {
+        const url = modalNewLogoUrl.value.trim();
+        if (!url) {
+          alert('Please enter a valid logo image URL.');
+          saveBtn.disabled = false;
+          saveBtn.innerText = 'Save & Add to List';
+          return;
+        }
+        formData.append('logoUrl', url);
+      }
+
+      try {
+        const res = await fetch('/api/logos', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          closeAddModal();
+          showToast(`App "${data.logo.name}" saved!`, '✓');
+          await loadLogos(data.logo.id);
+        } else {
+          alert(data.error || 'Failed to save App and Logo');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Save & Add to List';
+      }
+    });
+
+    // =========================================================================
+    // ACTION 2: EDIT NAME OR LOGO
+    // =========================================================================
+    const editModal = document.getElementById('editAppNameLogoModal');
+    const openEditBtn = document.getElementById('btnActionEditApp');
+    const closeEditBtn = document.getElementById('closeEditAppModalBtn');
+    const cancelEditBtn = document.getElementById('cancelEditAppBtn');
+    const editTabUpload = document.getElementById('editTabUploadBtn');
+    const editTabUrl = document.getElementById('editTabUrlBtn');
+    const editSectionUpload = document.getElementById('editSectionUpload');
+    const editSectionUrl = document.getElementById('editSectionUrl');
+    const modalEditAppName = document.getElementById('modalEditAppName');
+    const modalEditLogoFile = document.getElementById('modalEditLogoFile');
+    const modalEditLogoUrl = document.getElementById('modalEditLogoUrl');
+    const editModalPreviewImg = document.getElementById('editModalPreviewImg');
+    const editModalPreviewText = document.getElementById('editModalPreviewText');
+
+    if (openEditBtn) {
+      openEditBtn.addEventListener('click', () => {
+        const active = getActiveApp();
+        modalEditAppName.value = active.name;
+        modalEditLogoUrl.value = active.icon.startsWith('http') || active.icon.startsWith('/assets') ? active.icon : '';
+        editModalPreviewImg.src = active.icon;
+        editModalPreviewText.textContent = active.name;
+        setEditMode('upload');
+        editModal.classList.remove('hidden');
+      });
+    }
+
+    function closeEditModal() {
+      if (editModal) editModal.classList.add('hidden');
+    }
+    if (closeEditBtn) closeEditBtn.addEventListener('click', closeEditModal);
+    if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeEditModal);
+
+    function setEditMode(mode) {
+      editLogoMode = mode;
+      if (mode === 'upload') {
+        editTabUpload.className = 'flex-1 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition-all text-center cursor-pointer';
+        editTabUrl.className = 'flex-1 py-1.5 rounded-lg text-gray-500 hover:text-gray-900 transition-all text-center cursor-pointer';
+        editSectionUpload.classList.remove('hidden');
+        editSectionUrl.classList.add('hidden');
+      } else {
+        editTabUrl.className = 'flex-1 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition-all text-center cursor-pointer';
+        editTabUpload.className = 'flex-1 py-1.5 rounded-lg text-gray-500 hover:text-gray-900 transition-all text-center cursor-pointer';
+        editSectionUrl.classList.remove('hidden');
+        editSectionUpload.classList.add('hidden');
+      }
+    }
+    if (editTabUpload) editTabUpload.addEventListener('click', () => setEditMode('upload'));
+    if (editTabUrl) editTabUrl.addEventListener('click', () => setEditMode('url'));
+
+    if (modalEditLogoFile) {
+      modalEditLogoFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            editModalPreviewImg.src = ev.target.result;
+            editModalPreviewText.textContent = file.name;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    if (modalEditLogoUrl) {
+      modalEditLogoUrl.addEventListener('input', (e) => {
+        const url = e.target.value.trim();
+        if (url) {
+          editModalPreviewImg.src = url;
+          editModalPreviewText.textContent = url;
+        }
+      });
+    }
+
+    document.getElementById('editAppForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const active = getActiveApp();
+      const saveBtn = document.getElementById('saveEditAppBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerText = 'Updating...';
+
+      const formData = new FormData();
+      formData.append('appName', modalEditAppName.value.trim());
+
+      if (editLogoMode === 'upload' && modalEditLogoFile.files.length > 0) {
+        formData.append('logoFile', modalEditLogoFile.files[0]);
+      } else if (editLogoMode === 'url' && modalEditLogoUrl.value.trim()) {
+        formData.append('logoUrl', modalEditLogoUrl.value.trim());
+      }
+
+      try {
+        const res = await fetch(`/api/logos/${active.id}/edit`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          closeEditModal();
+          showToast(`App "${data.logo.name}" updated!`, '✓');
+          await loadLogos(active.id);
+        } else {
+          alert(data.error || 'Failed to update App');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Update & Save';
+      }
+    });
+
+    // =========================================================================
+    // ACTION 3: REMOVE NAME WITH LOGO FROM LIST
+    // =========================================================================
+    const removeBtn = document.getElementById('btnActionRemoveApp');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', async () => {
+        const active = getActiveApp();
+        if (allLogos.length <= 1) {
+          alert('At least one App Name & Logo must remain in the list.');
+          return;
+        }
+
+        const confirmed = confirm(`Are you sure you want to remove "${active.name}" with its logo from the saved list?`);
+        if (!confirmed) return;
+
+        try {
+          const res = await fetch(`/api/logos/${active.id}`, { method: 'DELETE' });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            showToast(`"${active.name}" removed from list`, '🗑');
+            await loadLogos();
+          } else {
+            alert(data.error || 'Failed to remove App');
+          }
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      });
+    }
+
+    // =========================================================================
+    // FIELD VISIBILITY TOGGLES (SHOW = GREEN, HIDE = RED)
+    // =========================================================================
+    const fieldVisibilityState = {
+      customerName: true,
+      remainingAmount: true,
+      loanAmount: true,
+      receivedAmount: true,
+      bankAddress: true,
+      amountPaid: true,
+      overdueDays: true,
+      lateFee: true,
+      dates: true,
+      upiId: true
+    };
+
+    function updateVisibilityUI() {
+      for (const [field, isVisible] of Object.entries(fieldVisibilityState)) {
+        const showBtn = document.getElementById(`visBtn_${field}_show`);
+        const hideBtn = document.getElementById(`visBtn_${field}_hide`);
+        if (!showBtn || !hideBtn) continue;
+
+        const isCompact = (field === 'overdueDays' || field === 'lateFee');
+        const padClass = isCompact ? 'px-2 py-0.5 text-[10.5px]' : 'px-2.5 py-0.5 text-[11px]';
+
+        if (isVisible) {
+          showBtn.className = `${padClass} rounded-md transition-all cursor-pointer bg-emerald-600 text-white shadow-xs font-bold`;
+          hideBtn.className = `${padClass} rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold bg-transparent`;
+        } else {
+          showBtn.className = `${padClass} rounded-md transition-all cursor-pointer text-gray-500 hover:text-gray-800 font-semibold bg-transparent`;
+          hideBtn.className = `${padClass} rounded-md transition-all cursor-pointer bg-red-600 text-white shadow-xs font-bold`;
+        }
+      }
+    }
+
+    function setFieldVisibility(field, isVisible) {
+      if (Object.prototype.hasOwnProperty.call(fieldVisibilityState, field)) {
+        fieldVisibilityState[field] = !!isVisible;
+        updateVisibilityUI();
+      }
+    }
+    window.setFieldVisibility = setFieldVisibility;
+    // Initial sync
+    updateVisibilityUI();
+
+    // =========================================================================
+    // SMART LOAN CALCULATION RULES & AUTO-SYNC
+    // 1. 7-Day Term: Received Date <-> Due Date auto-sync (e.g. 02-Nov-2026 to 08-Nov-2026, +6 / -6 days)
+    // 2. Overdue Days: counts delay past Due Date
+    // 3. Late Fee: 7% per overdue day on unpaid principal (Loan - Paid)
+    // 4. Received Amount: 60% of Loan Amount always (40% interest deducted)
+    // 5. Remaining Amount: {(Loan Amount + Late Fee) - Amount Paid}
+    // 6. Renew: 40% of Remaining Amount
+    // 7. Auto Calculator ON / OFF: can be toggled anytime for manual overrides
+    // =========================================================================
+    let autoCalculateEnabled = true;
+    const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const MONTH_MAP = {
+      jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+      jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+    };
+
+    function setAutoCalculator(enabled) {
+      autoCalculateEnabled = !!enabled;
+      const container = document.getElementById('autoCalcContainer');
+      const onBtn = document.getElementById('autoCalcOnBtn');
+      const offBtn = document.getElementById('autoCalcOffBtn');
+      const statusDot = document.getElementById('autoCalcStatusDot');
+      const badge = document.getElementById('autoCalcBadge');
+      const subtext = document.getElementById('autoCalcSubtext');
+
+      if (autoCalculateEnabled) {
+        if (container) {
+          container.style.background = 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)';
+          container.style.borderColor = '#86efac';
+        }
+        if (statusDot) {
+          statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0';
+        }
+        if (badge) {
+          badge.className = 'text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+          badge.textContent = 'ACTIVE (ON)';
+        }
+        if (subtext) {
+          subtext.innerHTML = 'Auto-syncs 7-Day Term (<span class="font-bold text-emerald-800">02-Nov ↔ 08-Nov</span>), 60% Received Amount, Overdue Days, 7% Daily Late Fee & Remaining Amount.';
+        }
+        if (onBtn) {
+          onBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer bg-emerald-600 text-white shadow-xs';
+        }
+        if (offBtn) {
+          offBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-gray-500 hover:text-gray-800 bg-transparent';
+        }
+        // Immediately sync fields with active auto calculation rules
+        recalculateLoanForm('all');
+      } else {
+        if (container) {
+          container.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+          container.style.borderColor = '#cbd5e1';
+        }
+        if (statusDot) {
+          statusDot.className = 'w-2.5 h-2.5 rounded-full bg-gray-400 flex-shrink-0';
+        }
+        if (badge) {
+          badge.className = 'text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-gray-200 text-gray-700 border border-gray-300';
+          badge.textContent = 'DISABLED (OFF)';
+        }
+        if (subtext) {
+          subtext.innerHTML = '<span class="font-bold text-rose-700">Manual Mode Active.</span> Automatic calculations and date shifts are paused. You can freely edit any field without overrides.';
+        }
+        if (onBtn) {
+          onBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer text-gray-500 hover:text-gray-800 bg-transparent';
+        }
+        if (offBtn) {
+          offBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer bg-rose-600 text-white shadow-xs';
+        }
+        // Update breakdown info to reflect manual mode
+        recalculateLoanForm('manual');
+      }
+    }
+    window.setAutoCalculator = setAutoCalculator;
+
+    function parseAppDate(str) {
+      if (!str) return null;
+      const s = String(str).trim();
+      // YYYY-MM-DD
+      let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+      if (m) {
+        return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+      }
+      // DD-MMM-YYYY (e.g. 02-Nov-2026 or 2-Nov-2026)
+      m = s.match(/^(\d{1,2})[-/ ]([A-Za-z]{3,9})[-/ ](\d{4})$/);
+      if (m) {
+        const monStr = m[2].substring(0, 3).toLowerCase();
+        const monIdx = MONTH_MAP[monStr];
+        if (monIdx !== undefined) {
+          return new Date(parseInt(m[3], 10), monIdx, parseInt(m[1], 10));
+        }
+      }
+      // DD-MM-YYYY
+      m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+      if (m) {
+        return new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+      }
+      const d = new Date(s);
+      return isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function formatAppDate(date, originalStr = '') {
+      if (!date || isNaN(date.getTime())) return '';
+      const d = String(date.getDate()).padStart(2, '0');
+      const mNum = String(date.getMonth() + 1).padStart(2, '0');
+      const mName = MONTH_NAMES[date.getMonth()];
+      const y = date.getFullYear();
+
+      if (/^\d{4}[-/]/.test(String(originalStr).trim())) {
+        return `${y}-${mNum}-${d}`;
+      }
+      if (/^\d{1,2}[-/]\d{1,2}[-/]\d{4}$/.test(String(originalStr).trim())) {
+        return `${d}-${mNum}-${y}`;
+      }
+      // Default standard format matching user specification: 02-Nov-2026
+      return `${d}-${mName}-${y}`;
+    }
+
+    function shiftAppDate(dateStr, days) {
+      const dt = parseAppDate(dateStr);
+      if (!dt) return '';
+      const res = new Date(dt.getTime());
+      res.setDate(res.getDate() + days);
+      return formatAppDate(res, dateStr);
+    }
+
+    function computeOverdueDaysFromDueDate(dueDateStr) {
+      const due = parseAppDate(dueDateStr);
+      if (!due) return 0;
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diffTime = today.getTime() - due.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return Math.max(0, diffDays);
+    }
+
+    let isAutoCalculating = false;
+
+    function recalculateLoanForm(triggerSource = 'all') {
+      if (isAutoCalculating) return;
+
+      // Handle Manual Override mode when Auto Calculator is turned OFF
+      if (!autoCalculateEnabled) {
+        const remainingInput = document.getElementById('repaymentAmount');
+        const renewPreviewEl = document.getElementById('calcRenewPreviewVal');
+        const calcFormulaEl = document.getElementById('calcFormulaBreakdown');
+        const loanInput = document.getElementById('loanAmount');
+        const lateFeeInput = document.getElementById('lateFee');
+        const paidInput = document.getElementById('amountPaid');
+
+        if (remainingInput && renewPreviewEl) {
+          const remVal = Math.max(0, parseFloat(remainingInput.value) || 0);
+          const renewAmount = Math.round(remVal * 0.40);
+          renewPreviewEl.textContent = `₹ ${renewAmount.toLocaleString()}`;
+        }
+        if (calcFormulaEl && loanInput && lateFeeInput && paidInput && remainingInput) {
+          const loanVal = parseFloat(loanInput.value) || 0;
+          const lateFeeVal = parseFloat(lateFeeInput.value) || 0;
+          const paidVal = parseFloat(paidInput.value) || 0;
+          const remVal = parseFloat(remainingInput.value) || 0;
+          calcFormulaEl.innerHTML = `<span class="text-rose-700 font-bold font-sans">Manual Mode (Auto OFF):</span> Loan ₹${loanVal.toLocaleString()} + Late ₹${lateFeeVal.toLocaleString()} - Paid ₹${paidVal.toLocaleString()} = <span class="text-[#283593] font-bold">₹${remVal.toLocaleString()}</span>`;
+        }
+        return;
+      }
+
+      isAutoCalculating = true;
+
+      try {
+        const loanInput = document.getElementById('loanAmount');
+        const receivedInput = document.getElementById('receivedAmount');
+        const paidInput = document.getElementById('amountPaid');
+        const overdueInput = document.getElementById('overdueDays');
+        const lateFeeInput = document.getElementById('lateFee');
+        const remainingInput = document.getElementById('repaymentAmount');
+        const receivedDateInput = document.getElementById('amountReceivedDate');
+        const dueDateInput = document.getElementById('dueDate');
+
+        if (!loanInput || !remainingInput) return;
+
+        const loanVal = Math.max(0, parseFloat(loanInput.value) || 0);
+        const paidVal = Math.max(0, parseFloat(paidInput.value) || 0);
+
+        // 1. Date synchronization (7-day inclusive loan term: 02-Nov-2026 to 08-Nov-2026 is exactly +6 calendar days)
+        if (triggerSource === 'receivedDate' && receivedDateInput.value.trim().length >= 8) {
+          const shifted = shiftAppDate(receivedDateInput.value, 6);
+          if (shifted) dueDateInput.value = shifted;
+        } else if (triggerSource === 'dueDate' && dueDateInput.value.trim().length >= 8) {
+          const shifted = shiftAppDate(dueDateInput.value, -6);
+          if (shifted) receivedDateInput.value = shifted;
+        }
+
+        // 2. Received Amount: 60% of Loan Amount always (40% deducted upfront)
+        const calculatedReceived = Math.round(loanVal * 0.60);
+        if (triggerSource !== 'receivedAmountManual') {
+          receivedInput.value = calculatedReceived;
+        }
+
+        // 3. Overdue (Days): Count delay from Due Date
+        let overdueDays = 0;
+        if (triggerSource === 'overdueManual') {
+          overdueDays = Math.max(0, parseInt(overdueInput.value, 10) || 0);
+        } else if (triggerSource === 'dueDate' || triggerSource === 'receivedDate') {
+          overdueDays = computeOverdueDaysFromDueDate(dueDateInput.value);
+          overdueInput.value = overdueDays;
+        } else {
+          overdueDays = Math.max(0, parseInt(overdueInput.value, 10) || 0);
+        }
+
+        // 4. Late Fee: 7% per overdue day on unpaid loan balance {Loan Amount - Paid Amount}
+        const unpaidPrincipal = Math.max(0, loanVal - paidVal);
+        let calculatedLateFee = 0;
+        if (overdueDays > 0 && unpaidPrincipal > 0) {
+          calculatedLateFee = Math.round(unpaidPrincipal * 0.07 * overdueDays);
+        }
+
+        if (triggerSource !== 'lateFeeManual') {
+          lateFeeInput.value = calculatedLateFee;
+        } else {
+          calculatedLateFee = Math.max(0, parseFloat(lateFeeInput.value) || 0);
+        }
+
+        // 5. Remaining Amount: {(Loan Amount + Late Fee) - Amount Paid}
+        const calculatedRemaining = Math.max(0, Math.round((loanVal + calculatedLateFee) - paidVal));
+        if (triggerSource !== 'remainingManual') {
+          remainingInput.value = calculatedRemaining;
+        }
+
+        // 6. Update visual preview badges
+        const renewAmount = Math.round(calculatedRemaining * 0.40);
+        const renewPreviewEl = document.getElementById('calcRenewPreviewVal');
+        if (renewPreviewEl) {
+          renewPreviewEl.textContent = `₹ ${renewAmount.toLocaleString()}`;
+        }
+
+        const calcFormulaEl = document.getElementById('calcFormulaBreakdown');
+        if (calcFormulaEl) {
+          calcFormulaEl.innerHTML = `(Loan ₹${loanVal.toLocaleString()} + Late Fee ₹${calculatedLateFee.toLocaleString()}) - Paid ₹${paidVal.toLocaleString()} = <span class="text-[#283593] font-bold">₹${calculatedRemaining.toLocaleString()}</span>`;
+        }
+
+        const calcReceivedBadge = document.getElementById('calcReceivedBadge');
+        if (calcReceivedBadge) {
+          calcReceivedBadge.textContent = `⚡ 60% = ₹${calculatedReceived.toLocaleString()}`;
+        }
+
+        const calcLateFeeBadge = document.getElementById('calcLateFeeBadge');
+        if (calcLateFeeBadge) {
+          calcLateFeeBadge.textContent = `${overdueDays}d × 7% = ₹${calculatedLateFee.toLocaleString()}`;
+        }
+      } finally {
+        isAutoCalculating = false;
+      }
+    }
+
+    // Attach real-time calculation listeners
+    const calcLoanInput = document.getElementById('loanAmount');
+    const calcReceivedInput = document.getElementById('receivedAmount');
+    const calcPaidInput = document.getElementById('amountPaid');
+    const calcOverdueInput = document.getElementById('overdueDays');
+    const calcLateFeeInput = document.getElementById('lateFee');
+    const calcRemainingInput = document.getElementById('repaymentAmount');
+    const calcReceivedDateInput = document.getElementById('amountReceivedDate');
+    const calcDueDateInput = document.getElementById('dueDate');
+
+    if (calcLoanInput) calcLoanInput.addEventListener('input', () => recalculateLoanForm('loanAmount'));
+    if (calcPaidInput) calcPaidInput.addEventListener('input', () => recalculateLoanForm('amountPaid'));
+    if (calcReceivedDateInput) {
+      calcReceivedDateInput.addEventListener('input', () => recalculateLoanForm('receivedDate'));
+      calcReceivedDateInput.addEventListener('change', () => recalculateLoanForm('receivedDate'));
+    }
+    if (calcDueDateInput) {
+      calcDueDateInput.addEventListener('input', () => recalculateLoanForm('dueDate'));
+      calcDueDateInput.addEventListener('change', () => recalculateLoanForm('dueDate'));
+    }
+    if (calcOverdueInput) calcOverdueInput.addEventListener('input', () => recalculateLoanForm('overdueManual'));
+    if (calcLateFeeInput) calcLateFeeInput.addEventListener('input', () => recalculateLoanForm('lateFeeManual'));
+    if (calcReceivedInput) calcReceivedInput.addEventListener('input', () => recalculateLoanForm('receivedAmountManual'));
+    if (calcRemainingInput) calcRemainingInput.addEventListener('input', () => recalculateLoanForm('remainingManual'));
+
+    // Run initial calculation to sync badges and formulas
+    recalculateLoanForm('init');
+
+    document.getElementById('createCustomerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitCustomerBtn');
+      btn.disabled = true;
+      btn.innerText = 'Creating...';
+
+      const payload = {
+        appName: document.getElementById('appName').value,
+        appLogo: document.getElementById('appLogo').value,
+        customerName: document.getElementById('customerName').value,
+        repaymentAmount: document.getElementById('repaymentAmount').value,
+        loanAmount: document.getElementById('loanAmount').value,
+        receivedAmount: document.getElementById('receivedAmount').value,
+        bankAddress: document.getElementById('bankAddress').value,
+        amountPaid: document.getElementById('amountPaid').value,
+        overdueDays: document.getElementById('overdueDays').value,
+        lateFee: document.getElementById('lateFee').value,
+        amountReceivedDate: document.getElementById('amountReceivedDate').value,
+        dueDate: document.getElementById('dueDate').value,
+        upiId: document.getElementById('upiId').value,
+        autoCalculate: autoCalculateEnabled,
+        visibility: { ...fieldVisibilityState }
+      };
+
+      try {
+        const res = await fetch('/api/customers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          const fullLink = `${window.location.origin}${data.link}`;
+          document.getElementById('generatedLinkInput').value = fullLink;
+          document.getElementById('openGeneratedLinkBtn').href = data.link;
+          document.getElementById('newLinkCard').classList.remove('hidden');
+          document.getElementById('newLinkCard').scrollIntoView({ behavior: 'smooth' });
+          await loadCustomers();
+        } else {
+          alert(data.error || 'Failed to create customer');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Create Customer & Generate Link';
+      }
+    });
+
+    document.getElementById('copyGeneratedLinkBtn').addEventListener('click', () => {
+      const input = document.getElementById('generatedLinkInput');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById('copyGeneratedLinkBtn');
+      btn.innerText = 'Copied!';
+      btn.classList.replace('bg-[#3442d9]', 'bg-green-600');
+      setTimeout(() => {
+        btn.innerText = 'Copy Link';
+        btn.classList.replace('bg-green-600', 'bg-[#3442d9]');
+      }, 2000);
+    });
+
+    function showToast(msg, icon = '✓') {
+      const toast = document.getElementById('adminToast');
+      if (!toast) return;
+      document.getElementById('adminToastMsg').innerText = msg;
+      document.getElementById('adminToastIcon').innerText = icon;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.style.opacity = '1', 10);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 2500);
+    }
+
+    async function changeCustomerStatus(id, newStatus) {
+      try {
+        const res = await fetch(`/api/customers/${id}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(`Result set: ${newStatus}`, '✓');
+          await loadCustomers();
+        } else {
+          alert(data.error || 'Failed to update status');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function loadCustomers() {
+      try {
+        const res = await fetch('/api/customers');
+        const data = await res.json();
+        const tbody = document.getElementById('customersTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.customers || data.customers.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400 body-font">কোন কাস্টমার পাওয়া যায়নি (No customers created yet)</td></tr>`;
+          return;
+        }
+
+        data.customers.forEach(cust => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-indigo-50/20 transition-colors';
+
+          const status = cust.status || 'Pending';
+          const isChecking = status === 'Checking' || status === 'UTR Submitted';
+
+          let statusBadge = '';
+          if (isChecking) {
+            statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800 border border-purple-200 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-purple-600 animate-ping"></span> ⏳ Checking / In Review</span>`;
+          } else if (status === 'Payment Success') {
+            statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-green-100 text-green-800 border border-green-200 shadow-sm">✓ Payment Success</span>`;
+          } else if (status === 'Payment Failed') {
+            statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-800 border border-red-200 shadow-sm">✕ Payment Failed</span>`;
+          } else if (status === 'UTR Not Matched') {
+            statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200 shadow-sm">⚠ UTR Not Matched</span>`;
+          } else if (status === 'Bank Not Matched') {
+            statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-100 text-orange-800 border border-orange-200 shadow-sm">🏦 Bank Not Matched</span>`;
+          } else {
+            statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-600">Pending</span>`;
+          }
+
+          const utrDisplay = cust.submittedUtr
+            ? `<div class="space-y-1.5 py-1">
+                <div class="flex items-center space-x-2">
+                  <span class="font-mono font-bold text-gray-900 text-[13px] bg-gray-100 px-2 py-0.5 rounded border border-gray-200 tracking-wider">${cust.submittedUtr}</span>
+                  <button onclick="copyToClipboard('${cust.submittedUtr}', this)" class="px-2 py-0.5 text-[10.5px] bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded font-bold transition-colors">Copy</button>
+                  ${cust.utrSubmittedAt ? `<span class="text-[10.5px] text-gray-400 font-sans">${new Date(cust.utrSubmittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
+                </div>
+                <div>${statusBadge}</div>
+                <div class="pt-1 space-y-1">
+                  <div class="flex items-center space-x-1.5">
+                    <span class="text-[11px] font-bold text-gray-500">Set Result:</span>
+                    <select onchange="changeCustomerStatus('${cust.id}', this.value)" class="text-xs font-bold border border-gray-300 rounded-lg px-2 py-1 bg-white hover:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                      <option value="Checking" ${isChecking ? 'selected' : ''}>⏳ Checking / In Review</option>
+                      <option value="Payment Success" ${status === 'Payment Success' ? 'selected' : ''}>✓ Payment Success</option>
+                      <option value="Payment Failed" ${status === 'Payment Failed' ? 'selected' : ''}>✕ Payment Failed</option>
+                      <option value="UTR Not Matched" ${status === 'UTR Not Matched' ? 'selected' : ''}>⚠ UTR Not Matched</option>
+                      <option value="Bank Not Matched" ${status === 'Bank Not Matched' ? 'selected' : ''}>🏦 Bank Not Matched</option>
+                      <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    </select>
+                  </div>
+                  <div class="flex flex-wrap gap-1 pt-0.5">
+                    <button onclick="changeCustomerStatus('${cust.id}', 'Payment Success')" class="px-2 py-0.5 text-[10.5px] font-bold rounded bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-all ${status === 'Payment Success' ? 'ring-2 ring-green-600 bg-green-100 font-black' : ''}">✓ Success</button>
+                    <button onclick="changeCustomerStatus('${cust.id}', 'Payment Failed')" class="px-2 py-0.5 text-[10.5px] font-bold rounded bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 transition-all ${status === 'Payment Failed' ? 'ring-2 ring-red-600 bg-red-100 font-black' : ''}">✕ Failed</button>
+                    <button onclick="changeCustomerStatus('${cust.id}', 'UTR Not Matched')" class="px-2 py-0.5 text-[10.5px] font-bold rounded bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition-all ${status === 'UTR Not Matched' ? 'ring-2 ring-amber-600 bg-amber-100 font-black' : ''}">⚠ UTR Mismatch</button>
+                    <button onclick="changeCustomerStatus('${cust.id}', 'Bank Not Matched')" class="px-2 py-0.5 text-[10.5px] font-bold rounded bg-orange-50 text-orange-800 hover:bg-orange-100 border border-orange-200 transition-all ${status === 'Bank Not Matched' ? 'ring-2 ring-orange-600 bg-orange-100 font-black' : ''}">🏦 Bank Mismatch</button>
+                    <button onclick="changeCustomerStatus('${cust.id}', 'Checking')" class="px-2 py-0.5 text-[10.5px] font-bold rounded bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all ${isChecking ? 'ring-2 ring-purple-600 bg-purple-100 font-black' : ''}">🔄 Checking</button>
+                  </div>
+                </div>
+              </div>`
+            : `<div class="space-y-1.5 py-1">
+                <span class="text-gray-400 text-[11px] italic">Awaiting customer payment & UTR</span>
+                <div>${statusBadge}</div>
+                <div class="flex items-center space-x-1.5 pt-1">
+                  <span class="text-[10px] font-bold text-gray-500">Test Result:</span>
+                  <select onchange="changeCustomerStatus('${cust.id}', this.value)" class="text-xs font-semibold border border-gray-200 rounded-lg px-2 py-0.5 bg-white cursor-pointer text-gray-600">
+                    <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Checking" ${isChecking ? 'selected' : ''}>⏳ Checking</option>
+                    <option value="Payment Success" ${status === 'Payment Success' ? 'selected' : ''}>✓ Payment Success</option>
+                    <option value="Payment Failed" ${status === 'Payment Failed' ? 'selected' : ''}>✕ Payment Failed</option>
+                    <option value="UTR Not Matched" ${status === 'UTR Not Matched' ? 'selected' : ''}>⚠ UTR Not Matched</option>
+                    <option value="Bank Not Matched" ${status === 'Bank Not Matched' ? 'selected' : ''}>🏦 Bank Not Matched</option>
+                  </select>
+                </div>
+              </div>`;
+
+          const fullLink = `${window.location.origin}/pay/${cust.token}`;
+
+          tr.innerHTML = `
+            <td class="py-3 px-3 align-top">
+              <div class="flex items-center space-x-2">
+                <img src="${cust.appLogo}" class="w-7 h-7 rounded-lg object-cover border flex-shrink-0" alt="logo">
+                <span class="font-bold text-gray-900 text-xs">${cust.appName}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3 align-top">
+              <div class="font-bold text-gray-900 text-xs">${cust.customerName}</div>
+              <div class="text-[11px] text-gray-500">Loan: ₹ ${Number(cust.loanAmount || cust.repaymentAmount).toLocaleString()}</div>
+            </td>
+            <td class="py-3 px-3 align-top font-bold text-indigo-700 text-xs whitespace-nowrap">
+              ₹ ${Number(cust.repaymentAmount).toLocaleString()}
+            </td>
+            <td class="py-3 px-3 align-top">
+              ${utrDisplay}
+            </td>
+            <td class="py-3 px-3 align-top text-right space-x-1 whitespace-nowrap">
+              <button onclick="copyToClipboard('${fullLink}', this)" class="px-2.5 py-1 text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg font-bold border border-indigo-100 transition-colors" title="Copy Link">Copy Link</button>
+              <a href="/pay/${cust.token}" target="_blank" class="px-2.5 py-1 text-xs bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-lg font-bold transition-colors">View</a>
+              <button onclick="deleteCustomer('${cust.id}')" class="px-2 py-1 text-xs bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-bold transition-colors" title="Delete">✕</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Failed to load customers:', err);
+      }
+    }
+
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text);
+      const original = btn.innerText;
+      btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerText = original, 1500);
+    }
+
+    async function deleteCustomer(id) {
+      if (!confirm('Are you sure you want to delete this customer?')) return;
+      try {
+        await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+        loadCustomers();
+      } catch (err) {
+        alert('Delete failed');
+      }
+    }
+
+    loadLogos();
+    loadCustomers();
+
+    // Auto-refresh customer list every 3.5 seconds for real-time dashboard updates
+    setInterval(loadCustomers, 3500);
+  </script>
+</body>
+</html>

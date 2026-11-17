@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Repay</title>
+  <!-- Google Fonts: Lora (Exact match with reference screenshots) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Exact Typography from reference screenshots: Lora Serif */
+    *, html, body, input, select, button {
+      font-family: 'Lora', Georgia, 'Times New Roman', Times, serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-serif-app {
+      font-family: 'Lora', Georgia, 'Times New Roman', Times, serif;
+    }
+    .font-sans-app {
+      font-family: 'Lora', Georgia, 'Times New Roman', Times, serif;
+    }
+    body {
+      background-color: #f2f3f5;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Toast animation */
+    #toast {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulseCheck {
+      0% { transform: scale(0.6); opacity: 0; }
+      60% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulseRedDot {
+      0% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.85);
+      }
+      70% {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 9px rgba(239, 68, 68, 0);
+      }
+      100% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center bg-[#f2f3f5]">
+
+  <!-- Mobile Container: 100% Width on Mobile, 420px Centered on PC -->
+  <div class="w-full max-w-[420px] min-h-screen bg-[#f2f3f5] flex flex-col relative shadow-sm">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 hidden opacity-0 transition-all bg-[#1e2530] text-white text-[13px] px-4 py-2.5 rounded-full shadow-2xl font-bold flex items-center space-x-2 font-sans-app">
+      <span id="toastIcon">📋</span>
+      <span id="toastMsg">Copied!</span>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: REPAY (SCREENSHOT 3: EXACT PIXEL-PERFECT REPLICA) -->
+    <!-- ========================================================================= -->
+    <div id="viewRepay" class="flex-1 flex flex-col justify-between pb-28 hidden">
+      
+      <!-- Top Bar (Exact Screenshot: White bar, Black arrow, Centered Serif Title) -->
+      <div class="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-20">
+        <button onclick="window.history.back()" class="text-black p-1 focus:outline-none" title="Back">
+          <svg class="w-5 h-5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <h1 class="text-[19px] font-bold text-black font-serif-app tracking-wide">Repay</h1>
+        <div class="w-5"></div>
+      </div>
+
+      <div class="space-y-3.5 pt-3">
+        
+        <!-- App Branding: Icon + App Name (Screenshot 3) -->
+        <!-- App Branding: Icon + App Name (Screenshot 3 & image_860d4558.png) -->
+        <div class="flex items-center space-x-3 px-4">
+          <div class="w-[48px] h-[48px] rounded-2xl overflow-hidden shadow-sm flex-shrink-0 bg-white border border-gray-100 flex items-center justify-center">
+            <img id="mainAppLogo" src="/assets/zen-money.svg" alt="App Logo" class="w-full h-full object-cover">
+          </div>
+          <h2 id="mainAppName" class="text-[23px] font-bold text-[#1a1a1a] font-serif-app">Zen Money</h2>
+        </div>
+
+        <!-- Main Details Card (Screenshot 3 & image_93367845.png) -->
+        <div class="mx-3.5 bg-white rounded-2xl px-5 py-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-gray-100/80">
+          
+          <!-- Repayment Amount Header (image_860d4558.png) -->
+          <div id="rowRemainingAmountBlock" class="text-center pb-2.5">
+            <p class="text-[#262626] text-[17.5px] font-medium font-serif-app">Repayment Amount</p>
+            <h3 id="mainRepaymentAmount" class="text-[36px] font-bold text-[#283593] font-serif-app tracking-tight mt-1">
+              ₹ 12,540
+            </h3>
+          </div>
+
+          <!-- Rows List (Exact Serif Font from image_93367845.png) -->
+          <div class="pt-2 space-y-3.5 text-[14px] font-serif-app">
+            <div id="rowCustomerName" class="flex justify-between items-start">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Name</span>
+              <span id="custNameVal" class="text-[#1a1a1a] font-semibold text-right max-w-[210px] truncate uppercase font-serif-app">BHAVIK KAMLES...</span>
+            </div>
+
+            <div id="rowBankAddress" class="flex justify-between items-start">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Bank Address</span>
+              <span id="bankAddressVal" class="text-[#1a1a1a] text-right max-w-[220px] truncate text-[13px] font-medium font-serif-app">HDFC BANK, ANDHERI (W), MU...</span>
+            </div>
+
+            <div id="rowReceivedAmount" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Received amount</span>
+              <span id="receivedAmountVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 11,000</span>
+            </div>
+
+            <div id="rowLoanAmount" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Loan Amount</span>
+              <span id="loanAmountVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 11,000</span>
+            </div>
+
+            <div id="rowAmountPaid" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Amount Paid</span>
+              <span id="amountPaidVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 0</span>
+            </div>
+
+            <div id="rowOverdueDays" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Over Due</span>
+              <span id="overdueDaysVal" class="text-[#be185d] font-bold font-serif-app">2 Days</span>
+            </div>
+
+            <div id="rowLateFee" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Late Fee</span>
+              <span id="lateFeeVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 1,540</span>
+            </div>
+
+            <!-- Dashed Divider Line (Exact Screenshot 3) -->
+            <div id="dividerDates" class="border-t border-dashed border-gray-200 my-2.5"></div>
+
+            <div id="rowReceivedDate" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Amount Received Date</span>
+              <span id="receivedDateVal" class="text-[#262626] font-semibold font-serif-app">23-10-2026</span>
+            </div>
+
+            <div id="rowDueDate" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Due Date</span>
+              <span id="dueDateVal" class="text-[#262626] font-semibold font-serif-app">30-10-2026</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tips Section (Exact Screenshot: Lora Serif font & image_a04636a8.png) -->
+        <div class="px-5 pt-2 pb-2 space-y-3.5 text-[15.5px] leading-[1.55] text-[#1a1a1a] font-serif-app">
+          <h4 class="font-normal text-[18px] text-[#1a1a1a] mb-2 font-serif-app">Tips:</h4>
+          
+          <p>
+            <span class="text-[#e02424] font-bold">! ! ! &nbsp;One UPI</span> can only transfer money <span class="text-[#e02424] font-bold">ONCE.</span>
+          </p>
+          
+          <p>
+            <span class="text-[#e02424] font-bold">! ! ! &nbsp;DO NOT CHANGE</span> the payment <span class="text-[#e02424] font-bold">AMOUNT & UPI.</span>
+          </p>
+
+          <p>
+            <span class="text-[#e02424] font-bold">! ! ! &nbsp;DO NOT</span> transfer money in the <span class="text-[#e02424] font-bold">UPI</span> friend <span class="text-[#e02424] font-bold">CHAT</span> window again.
+          </p>
+
+          <p>
+            Otherwise, the order <span class="text-[#e02424] font-bold">CANNOT be completed.</span>
+          </p>
+
+          <p>
+            After payment is completed, please <span class="text-[#e02424] font-bold">fill in the UTR.</span>
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Sticky Bottom Action Bar (Screenshot 3: White card, Rounded Top, Renew & Repay buttons) -->
+      <div class="fixed bottom-0 left-0 right-0 max-w-[420px] mx-auto bg-white px-5 py-3.5 flex items-center justify-between space-x-3.5 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] rounded-t-[26px] z-30">
+        <!-- Renew Button -->
+        <button 
+          id="goToRenewBtn"
+          class="w-1/2 py-3.5 px-4 rounded-full border-2 border-[#283593] bg-white text-[#283593] font-bold text-[18px] hover:bg-blue-50 transition-all active:scale-95 text-center font-serif-app shadow-sm"
+        >
+          Renew
+        </button>
+
+        <!-- Repay Button -->
+        <button 
+          id="goToPayFullBtn"
+          class="w-1/2 py-3.5 px-4 rounded-full bg-[#283593] text-white font-bold text-[18px] hover:bg-[#202b78] transition-all active:scale-95 text-center font-serif-app shadow-md"
+        >
+          Repay
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: RENEW PAYMENT (SAME EXACT FONT & STYLING) -->
+    <!-- ========================================================================= -->
+    <div id="viewRenew" class="flex-1 flex flex-col justify-between pb-24 hidden">
+      
+      <!-- Top Bar (Screenshot 4) -->
+      <div class="bg-white px-4 py-3 flex items-center justify-between sticky top-0 z-20">
+        <button id="backFromRenewBtn" class="text-black p-1 focus:outline-none" title="Back">
+          <svg class="w-5 h-5 stroke-[2.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <h1 class="text-[19px] font-bold text-black font-serif-app tracking-wide">Renew Payment</h1>
+        <div class="w-5"></div>
+      </div>
+
+      <div class="space-y-3.5 pt-3">
+        
+        <!-- App Branding (Same exact font) -->
+        <div class="flex items-center space-x-3 px-4">
+          <div class="w-[48px] h-[48px] rounded-2xl overflow-hidden shadow-sm flex-shrink-0 bg-white border border-gray-100 flex items-center justify-center">
+            <img id="renewAppLogo" src="/assets/zen-money.svg" alt="App Logo" class="w-full h-full object-cover">
+          </div>
+          <h2 id="renewAppName" class="text-[23px] font-bold text-[#1a1a1a] font-serif-app">Zen Money</h2>
+        </div>
+
+        <!-- Renew Card (40% Dynamic calculation, same exact font) -->
+        <div class="mx-3.5 bg-white rounded-2xl px-5 py-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-gray-100/80">
+          
+          <div id="rowRenewRemainingAmountBlock" class="text-center pb-2.5">
+            <p class="text-[#262626] text-[17.5px] font-medium font-serif-app">Repayment Amount</p>
+            <h3 id="renewCalculatedAmount" class="text-[36px] font-bold text-[#283593] font-serif-app tracking-tight mt-1">
+              ₹ 5,016
+            </h3>
+          </div>
+
+          <!-- Rows List (Same exact serif font) -->
+          <div class="pt-2 space-y-3.5 text-[14px] font-serif-app">
+            <div id="rowRenewCustomerName" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Name</span>
+              <span id="renewCustNameVal" class="text-[#1a1a1a] font-semibold uppercase font-serif-app">BHAVIK KAMLESH SANGHVI</span>
+            </div>
+
+            <div id="rowRenewLoanAmount" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Loan Amount</span>
+              <span id="renewLoanAmountVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 11,000</span>
+            </div>
+
+            <div id="rowRenewLateFee" class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Late Fee</span>
+              <span id="renewLateFeeVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 1,540</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Renewal Day</span>
+              <span id="renewDaysVal" class="text-[#1a1a1a] font-semibold font-serif-app">7 Day</span>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-[#8e95a5] font-normal font-serif-app">Renewal Fee</span>
+              <span id="renewFeeVal" class="text-[#1a1a1a] font-semibold font-serif-app">₹ 4,400</span>
+            </div>
+
+            <!-- Upward Chevron Caret (Screenshot 4) -->
+            <div class="pt-1 flex justify-center text-blue-600">
+              <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Repay Now Button (Exact matching button) -->
+        <div class="px-3.5">
+          <button 
+            id="goToPayRenewBtn"
+            class="w-full py-4 px-6 rounded-full bg-[#283593] text-white font-bold text-[18px] shadow-lg hover:bg-[#202b78] transition-all active:scale-[0.98] text-center font-serif-app"
+          >
+            Repay Now
+          </button>
+        </div>
+
+        <!-- Tips Section (Same exact font and styling in Renew View) -->
+        <div class="px-5 pt-2 pb-2 space-y-3.5 text-[15.5px] leading-[1.55] text-[#1a1a1a] font-serif-app">
+          <h4 class="font-normal text-[18px] text-[#1a1a1a] mb-2 font-serif-app">Tips:</h4>
+          
+          <p>
+            <span class="text-[#e02424] font-bold">! ! ! &nbsp;One UPI</span> can only transfer money <span class="text-[#e02424] font-bold">ONCE.</span>
+          </p>
+          
+          <p>
+            <span class="text-[#e02424] font-bold">! ! ! &nbsp;DO NOT CHANGE</span> the payment <span class="text-[#e02424] font-bold">AMOUNT & UPI.</span>
+          </p>
+
+          <p>
+            <span class="text-[#e02424] font-bold">! ! ! &nbsp;DO NOT</span> transfer money in the <span class="text-[#e02424] font-bold">UPI</span> friend <span class="text-[#e02424] font-bold">CHAT</span> window again.
+          </p>
+
+          <p>
+            Otherwise, the order <span class="text-[#e02424] font-bold">CANNOT be completed.</span>
+          </p>
+
+          <p>
+            After payment is completed, please <span class="text-[#e02424] font-bold">fill in the UTR.</span>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: PAYMENT GATEWAY & QR — PIXEL-PERFECT v3 (CLOSE-UP SCREENSHOTS) -->
+    <!-- ========================================================================= -->
+    <div id="viewGateway" class="flex-1 flex flex-col" style="background:#f0eff5;">
+
+      <!-- ── TOP BAR ──────────────────────────────────────────────────────────── -->
+      <!-- Screenshot: Pure white bar, bold "< " left arrow, centered bold "Repay" -->
+      <div style="background:#ffffff;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;border-bottom:1.5px solid #f0f0f0;">
+        <button id="backFromGatewayBtn" style="background:none;border:none;cursor:pointer;padding:3px 2px;line-height:1;display:flex;align-items:center;" title="Back">
+          <svg width="22" height="22" fill="none" stroke="#111" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <h1 id="topBarTitle" style="font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:800;color:#0d0d0d;margin:0;letter-spacing:0.2px;">Repay</h1>
+        <div style="width:24px;"></div>
+      </div>
+
+      <!-- ── PURPLE TIMER BAR ─────────────────────────────────────────────────── -->
+      <!-- Deep purple #4a157c, clock icon, "10 : 00" remaining 10 minutes, English default language -->
+      <div style="background:#4a157c;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg width="18" height="18" fill="none" stroke="#e2b8ff" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l3.5 2"/>
+          </svg>
+          <span id="countdownTimer" style="color:#ffffff;font-size:16px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:2.5px;">10 : 00</span>
+        </div>
+        <!-- Language selector button -->
+        <button id="languageSelectorBtn" type="button"
+          style="background:transparent;border:1.6px solid #d4aaff;color:#e8d5ff;border-radius:999px;padding:3px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Segoe UI',Roboto,sans-serif;letter-spacing:0.3px;display:inline-flex;align-items:center;gap:5px;transition:all 0.15s ease;"
+          onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+          onmouseout="this.style.background='transparent'"
+          title="Select Language / ভাষা নির্বাচন করুন">
+          <span id="currentLangLabel">English</span>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- ── BIG AMOUNT ───────────────────────────────────────────────────────── -->
+      <div style="background:#ffffff;text-align:center;padding:14px 16px 12px;">
+        <h2 id="gatewayAmountDisplay" style="font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:800;color:#4a157c;margin:0;letter-spacing:-0.4px;">₹ 12540.00</h2>
+      </div>
+
+      <!-- ── CARDS SCROLL AREA ────────────────────────────────────────────────── -->
+      <div style="padding:10px 10px 18px;display:flex;flex-direction:column;gap:9px;">
+
+        <!-- ━━━━ CARD 1: Scan QR Code to Pay ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(80,0,160,0.07);border:1px solid #e5dff5;">
+          <!-- Lavender header row -->
+          <div style="background:#eeeaf8;padding:10px 14px;display:flex;align-items:center;gap:9px;">
+            <svg width="19" height="19" fill="none" stroke="#5b21b6" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="square" d="M4 9V5h4"/>
+              <path stroke-linecap="square" d="M4 15v4h4"/>
+              <path stroke-linecap="square" d="M20 9V5h-4"/>
+              <path stroke-linecap="square" d="M20 15v4h-4"/>
+            </svg>
+            <span id="card1Title" style="font-family:Georgia,'Times New Roman',serif;font-size:15.5px;font-weight:700;color:#2d1854;">Scan QR Code to Pay</span>
+          </div>
+          <!-- QR body: very light lavender/white bg, QR centered, no extra border box -->
+          <div style="padding:14px 14px 16px;display:flex;justify-content:center;background:#f8f7fc;">
+            <img id="dynamicQrImg" src="" alt="QR Code" style="width:175px;height:175px;object-fit:contain;display:block;">
+          </div>
+        </div>
+
+        <!-- ━━━━ CARD 2: Pay via UPI App ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(80,0,160,0.07);border:1px solid #e5dff5;">
+          <!-- Lavender header row -->
+          <div style="background:#f6f3fc;padding:10px 14px;display:flex;align-items:center;gap:9px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2.3">
+              <rect x="3" y="3" width="7" height="7" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="17.5" cy="6.5" r="3.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="card2Title" style="font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:16.5px;font-weight:700;color:#1e1b4b;letter-spacing:0.1px;">Pay via UPI App</span>
+          </div>
+          <!-- Two-column app buttons -->
+          <div style="padding:11px 9px;display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#ffffff;">
+
+            <!-- ═══ PAYTM BUTTON ═══ -->
+            <button id="paytmBtn"
+              type="button"
+              style="border:1.5px solid #d1cfe8;border-radius:13px;background:#ffffff;padding:11px 8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:all 0.15s ease;width:100%;box-sizing:border-box;"
+              onmouseover="this.style.background='#fbfaff';this.style.borderColor='#9074d0';"
+              onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1cfe8';">
+              <img src="/assets/paytm-logo.png" alt="Paytm Logo" style="height:18px;width:auto;object-fit:contain;flex-shrink:0;display:block;">
+              <span style="font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;color:#111827;letter-spacing:0.1px;white-space:nowrap;">Paytm</span>
+            </button>
+
+            <!-- ═══ PHONEPE BUTTON ═══ -->
+            <button id="phonepeBtn"
+              type="button"
+              style="border:1.5px solid #d1cfe8;border-radius:13px;background:#ffffff;padding:11px 8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:all 0.15s ease;width:100%;box-sizing:border-box;"
+              onmouseover="this.style.background='#fbfaff';this.style.borderColor='#9074d0';"
+              onmouseout="this.style.background='#ffffff';this.style.borderColor='#d1cfe8';">
+              <img src="/assets/phonepe-logo.png" alt="PhonePe Logo" style="width:26px;height:26px;border-radius:50%;object-fit:contain;flex-shrink:0;display:block;">
+              <span style="font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-size:17px;font-weight:700;color:#111827;letter-spacing:0.1px;white-space:nowrap;">PhonePe</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- ━━━━ CARD 3: Manual Transfer 🔥 Recommended ━━━━━━━━━━━━━━━━━━━━━━ -->
+        <div id="cardManualTransfer" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(80,0,160,0.07);border:1px solid #e5dff5;">
+          <!-- Lavender header row -->
+          <div style="background:#f6f3fc;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg width="17" height="17" fill="none" stroke="#4a157c" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+              </svg>
+              <span id="card3Title" style="font-family:Georgia,'Times New Roman',serif;font-size:15.5px;font-weight:700;color:#1e1b4b;">Manual Transfer</span>
+            </div>
+            <!-- Recommended badge: orange-red rounded pill, 🔥 fire icon -->
+            <span style="background:#f05252;color:#ffffff;border-radius:999px;padding:3.5px 11px;font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;gap:4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;white-space:nowrap;">
+              <span style="font-size:12px;">🔥</span> <span id="badgeRecommendedText">Recommended</span>
+            </span>
+          </div>
+
+          <!-- White body -->
+          <div style="padding:12px 14px 14px;background:#ffffff;">
+            <!-- UPI ID label -->
+            <p id="upiIdLabel" style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#111111;margin:0 0 8px;letter-spacing:0.2px;">UPI ID</p>
+
+            <!-- UPI row -->
+            <div style="display:flex;align-items:center;border:1.5px solid #ddd8ec;border-radius:12px;overflow:hidden;background:#ffffff;">
+              <span id="gatewayUpiText" style="font-family:Georgia,'Times New Roman',serif;font-size:15.5px;font-weight:600;color:#1a1a2e;flex:1;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Q60922****@ybl</span>
+              <!-- COPY button -->
+              <button id="copyUpiBtn"
+                style="background:#4a157c;color:#ffffff;border:none;border-radius:8px;margin:3.5px 5px;padding:8px 16px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:0.5px;transition:background 0.15s;"
+                onmouseover="this.style.background='#3b0f63'" onmouseout="this.style.background='#4a157c'">COPY</button>
+            </div>
+
+            <!-- Amber italic subtext -->
+            <p id="subtextGetNewUpi" style="font-family:Georgia,'Times New Roman',serif;font-size:12.5px;color:#c2710c;font-weight:600;margin:7px 0 0;font-style:italic;">Get new UPI every time, do not save.</p>
+          </div>
+        </div>
+
+        <!-- ━━━━ CARD 4: 12-digit UTR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <div style="background:#ffffff;border-radius:16px;padding:13px 14px 15px;box-shadow:0 1px 6px rgba(80,0,160,0.07);border:1px solid #e5dff5;">
+          <!-- Title: 12-digit UTR bold -->
+          <h3 id="card4Title" style="font-family:Georgia,'Times New Roman',serif;font-size:15.5px;font-weight:700;color:#111111;margin:0 0 10px;">12-digit UTR</h3>
+
+          <!-- Input wrapper -->
+          <div style="border:1.5px solid #ddd8ec;border-radius:12px;padding:0;background:#ffffff;overflow:hidden;" id="utrFieldWrapper">
+            <div style="display:flex;align-items:center;padding:10px 12px;">
+              <span style="color:#e53e3e;font-weight:800;margin-right:5px;font-size:15px;line-height:1;">*</span>
+              <span id="utrPrefixLabel" style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;font-weight:700;color:#374151;margin-right:10px;">UTR</span>
+              <input
+                type="text"
+                id="utrInput"
+                maxlength="12"
+                inputmode="numeric"
+                placeholder="Enter 12-digit UTR"
+                style="flex:1;border:none;outline:none;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:600;color:#1a1a2e;background:transparent;"
+              >
+            </div>
+            <!-- Inline validation -->
+            <div id="utrValidationMsg" style="display:none;padding:0 12px 8px;font-family:Georgia,'Times New Roman',serif;font-size:12.5px;color:#e53e3e;font-weight:600;">Input 12 digits</div>
+          </div>
+
+          <!-- Amber subtext -->
+          <p id="subtextCompletePayment" style="font-family:Georgia,'Times New Roman',serif;font-size:12.5px;color:#c2710c;font-weight:600;margin:8px 0 12px;font-style:italic;">Complete payment first, then enter UTR here.</p>
+
+          <!-- Submit UTR: full-width purple pill button -->
+          <button
+            id="submitUtrBtn"
+            style="width:100%;padding:13px 16px;border-radius:999px;background:#4a157c;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:16.5px;font-weight:700;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(74,21,124,0.3);transition:background 0.15s;letter-spacing:0.3px;"
+            onmouseover="this.style.background='#3b0f63'" onmouseout="this.style.background='#4a157c'"
+          >
+            Submit UTR
+          </button>
+        </div>
+
+        <!-- ━━━━ Warning Box ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <!-- Screenshot: White card, coral-red italic bold lines, no title -->
+        <div style="background:#ffffff;border-radius:18px;padding:15px 17px;box-shadow:0 1px 6px rgba(0,0,0,0.06);border:1px solid #fce8e8;">
+          <p id="warningTip1" style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;color:#e53e3e;font-style:italic;font-weight:700;margin:0 0 6px;">1.Please make sure you have installed the app.</p>
+          <p id="warningTip2" style="font-family:Georgia,'Times New Roman',serif;font-size:13.5px;color:#e53e3e;font-style:italic;font-weight:700;margin:0;">2.Don't pay for the same link repeatedly.</p>
+        </div>
+
+        <!-- ━━━━ Notice Box ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <!-- Screenshot: White card, bold "Notice:" title, gray body text -->
+        <div style="background:#ffffff;border-radius:18px;padding:16px 17px 18px;box-shadow:0 1px 6px rgba(0,0,0,0.06);border:1px solid #eeecf5;margin-bottom:10px;">
+          <h4 id="noticeHeading" style="font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:800;color:#0d0d0d;margin:0 0 8px;">Notice:</h4>
+          <p id="noticeText" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;color:#4b5563;line-height:1.65;margin:0;">
+            1. Please select the payment method you need and make sure your phone has the corresponding wallet software installed.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: LINK EXPIRED (EXACT PIXEL-PERFECT REPLICA: image_5decf202.png) -->
+    <!-- ========================================================================= -->
+    <div id="viewExpired" class="fixed inset-0 z-50 bg-[#f4f6fa] flex items-center justify-center p-4 hidden">
+      <div class="w-full max-w-[360px] bg-white rounded-[28px] px-8 py-12 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100/80 flex flex-col items-center text-center">
+        
+        <!-- Red Alarm Clock SVG (Exact match with reference image_5decf202.png) -->
+        <div class="w-[78px] h-[78px] flex items-center justify-center relative mb-5">
+          <svg width="78" height="78" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Top Bells -->
+            <!-- Left Bell -->
+            <path d="M22 36C18 31 18 24 23 19C28 14 36 17 39 23" fill="#ea3838" stroke="#d32f2f" stroke-width="1.8"/>
+            <path d="M25 24C23.5 27 24 30 27 33" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.6"/>
+            <!-- Right Bell -->
+            <path d="M78 36C82 31 82 24 77 19C72 14 64 17 61 23" fill="#ea3838" stroke="#d32f2f" stroke-width="1.8"/>
+            <path d="M75 24C76.5 27 76 30 73 33" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.6"/>
+            
+            <!-- Top Hammer & Bracket -->
+            <rect x="47" y="16" width="6" height="6" rx="1.5" fill="#64748b"/>
+            <path d="M43 17H57" stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>
+            
+            <!-- Bottom Feet -->
+            <path d="M31 82L25 92" stroke="#64748b" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M69 82L75 92" stroke="#64748b" stroke-width="4.5" stroke-linecap="round"/>
+
+            <!-- Clock Outer Red Ring -->
+            <circle cx="50" cy="54" r="34" fill="#ea3838" stroke="#cf2222" stroke-width="1.5"/>
+            
+            <!-- Clock Inner White Dial -->
+            <circle cx="50" cy="54" r="27.5" fill="#ffffff"/>
+
+            <!-- 12 Tick Marks -->
+            <line x1="50" y1="29.5" x2="50" y2="33" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="62" y1="32.8" x2="60.3" y2="35.8" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="71.2" y1="42.2" x2="68.2" y2="43.8" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="74.5" y1="54" x2="71" y2="54" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="71.2" y1="65.8" x2="68.2" y2="64.2" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="62" y1="75.2" x2="60.3" y2="72.2" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="50" y1="78.5" x2="50" y2="75" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="38" y1="75.2" x2="39.7" y2="72.2" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="28.8" y1="65.8" x2="31.8" y2="64.2" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="25.5" y1="54" x2="29" y2="54" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="28.8" y1="42.2" x2="31.8" y2="43.8" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="38" y1="32.8" x2="39.7" y2="35.8" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round"/>
+
+            <!-- Clock Hands (Pointed to 10:08) -->
+            <line x1="50" y1="54" x2="38" y2="44.5" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+            <line x1="50" y1="54" x2="65.5" y2="44.5" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="50" cy="54" r="3" fill="#ea3838"/>
+            <circle cx="50" cy="54" r="1.2" fill="#ffffff"/>
+          </svg>
+        </div>
+
+        <!-- Heading: Link Expired -->
+        <h2 class="text-[26px] font-bold text-[#111827] font-serif-app tracking-tight mb-3">
+          Link Expired
+        </h2>
+
+        <!-- Subtext -->
+        <p class="text-[15.5px] leading-relaxed text-[#4b5563] font-serif-app max-w-[280px]">
+          This payment link has expired.<br>
+          Please request a new payment link.
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ━━━━ UTR SUBMISSION & VERIFICATION MODAL ━━━━ -->
+  <div id="utrSuccessModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(15,23,42,0.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
+    <div style="background:#ffffff;border-radius:28px;width:92%;max-width:340px;padding:32px 24px 28px;text-align:center;box-shadow:0 25px 60px -12px rgba(0,0,0,0.35);transition:all 0.2s ease;">
+      
+      <!-- Modal Icon: Only ONE single icon is shown at any time -->
+      <div id="utrIconContainer" style="margin:0 auto 20px;display:flex;justify-content:center;align-items:center;min-height:76px;">
+        <!-- Loading spinner state (the ONLY icon shown during checking) -->
+        <div id="utrLoadingSpinner" style="display:inline-block;width:72px;height:72px;border-radius:50%;border:5px solid #f3e8ff;border-top-color:#6b21a8;border-right-color:#9333ea;animation:spin 0.75s linear infinite;"></div>
+        
+        <!-- Payment Success checkmark state (hidden by default) -->
+        <div id="utrCheckmarkIcon" style="display:none;width:72px;height:72px;border-radius:50%;background:#dcfce7;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(22,163,74,0.22);animation:pulseCheck 0.3s cubic-bezier(0.175,0.885,0.32,1.275);">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+        </div>
+
+        <!-- Payment Failed icon state (hidden by default) -->
+        <div id="utrFailedIcon" style="display:none;width:72px;height:72px;border-radius:50%;background:#fee2e2;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(220,38,38,0.22);animation:pulseCheck 0.3s cubic-bezier(0.175,0.885,0.32,1.275);">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </div>
+
+        <!-- UTR Warning / Mismatch icon state (hidden by default) -->
+        <div id="utrWarningIcon" style="display:none;width:72px;height:72px;border-radius:50%;background:#fef3c7;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(217,119,6,0.22);animation:pulseCheck 0.3s cubic-bezier(0.175,0.885,0.32,1.275);">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+
+        <!-- Bank Mismatch icon state (hidden by default) -->
+        <div id="utrBankIcon" style="display:none;width:72px;height:72px;border-radius:50%;background:#ffedd5;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(234,88,12,0.22);animation:pulseCheck 0.3s cubic-bezier(0.175,0.885,0.32,1.275);">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M14 10v11M12 3L2 10h20L12 3z"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Title: UTR Submitted! / Checking UTR... / Results -->
+      <h3 id="utrModalTitle" style="font-family:Georgia,'Playfair Display',serif;font-size:22px;font-weight:700;color:#111827;margin:0 0 14px;letter-spacing:-0.2px;">
+        Checking UTR...
+      </h3>
+
+      <!-- Body: Your 12-digit UTR ... has been Submitted and now Payment under Checking, please wait while to get results .. -->
+      <p id="utrModalBody" style="font-family:Georgia,serif;font-size:14.5px;color:#374151;line-height:1.55;margin:0 0 20px;">
+        Connecting to bank server to verify transaction details, please wait...
+      </p>
+
+      <!-- Highly Highlighted Red Live Badge with Red Dot and Red Text -->
+      <div id="utrCheckingBadge" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:13px 18px;background:linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);border:2px solid #ef4444;border-radius:999px;box-shadow:0 6px 20px rgba(239,68,68,0.24);margin-top:12px;">
+        <!-- Pulsing Red Dot -->
+        <span style="display:inline-block;width:11px;height:11px;background:#ef4444;border-radius:50%;animation:pulseRedDot 1.2s infinite ease-in-out;flex-shrink:0;"></span>
+        <!-- Red High-Contrast Text -->
+        <span id="checkingBadgeText" style="color:#dc2626;font-size:13.5px;font-weight:800;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;letter-spacing:-0.2px;">Payment under Checking, please wait...</span>
+      </div>
+
+      <!-- Action Button (only shown for completed outcomes: Success, Failed, Mismatch) -->
+      <button 
+        id="utrActionBtn"
+        type="button"
+        class="hidden"
+        style="width:100%;padding:13.5px 20px;color:#ffffff;border:none;border-radius:999px;font-size:16px;font-weight:700;cursor:pointer;font-family:Georgia,serif;box-shadow:0 4px 14px rgba(0,0,0,0.18);transition:all 0.15s ease;"
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- ━━━━ LANGUAGE SELECTION MODAL ━━━━ -->
+  <div id="languageModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
+    <div style="background:#ffffff;border-radius:24px;width:100%;max-width:380px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);overflow:hidden;">
+      <!-- Header -->
+      <div style="padding:15px 18px;border-bottom:1px solid #f0edf8;display:flex;align-items:center;justify-content:space-between;background:#faf9fe;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:18px;">🌐</span>
+          <span style="font-family:Georgia,serif;font-size:16px;font-weight:700;color:#1e1b4b;">Select Language / भाषा चुनें</span>
+        </div>
+        <button id="closeLanguageModalBtn" type="button" style="background:none;border:none;font-size:18px;color:#9ca3af;cursor:pointer;padding:4px;line-height:1;" title="Close">✕</button>
+      </div>
+      <!-- Language options grid -->
+      <div id="languageGrid" style="padding:14px 12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;max-height:62vh;overflow-y:auto;">
+        <!-- Populated dynamically by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentCustomer = null;
+    let selectedAmountToPay = 0;
+    let activePaymentType = 'full';
+
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const customerToken = pathParts[pathParts.length - 1] || 'pay78291';
+
+    function showToast(message, icon = '📋') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = message;
+      document.getElementById('toastIcon').innerText = icon;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.remove('opacity-0');
+        toast.classList.add('opacity-100');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 2500);
+    }
+
+    const viewRepay = document.getElementById('viewRepay');
+    const viewRenew = document.getElementById('viewRenew');
+    const viewGateway = document.getElementById('viewGateway');
+    const viewExpired = document.getElementById('viewExpired');
+
+    function showExpiredView() {
+      if (typeof statusPollingTimer !== 'undefined' && statusPollingTimer) {
+        clearInterval(statusPollingTimer);
+      }
+      if (typeof liveCheckTimer !== 'undefined' && liveCheckTimer) {
+        clearInterval(liveCheckTimer);
+      }
+
+      viewRepay.classList.add('hidden');
+      viewRenew.classList.add('hidden');
+      viewGateway.classList.add('hidden');
+
+      const utrModal = document.getElementById('utrSuccessModal');
+      if (utrModal) utrModal.classList.add('hidden');
+      const langModal = document.getElementById('languageModal');
+      if (langModal) langModal.classList.add('hidden');
+      const toast = document.getElementById('toast');
+      if (toast) toast.classList.add('hidden');
+
+      viewExpired.classList.remove('hidden');
+      document.title = 'Link Expired';
+      window.scrollTo(0, 0);
+    }
+
+    function showView(viewName) {
+      viewExpired.classList.add('hidden');
+      viewRepay.classList.add('hidden');
+      viewRenew.classList.add('hidden');
+      viewGateway.classList.add('hidden');
+
+      if (viewName === 'repay') {
+        viewRepay.classList.remove('hidden');
+      } else if (viewName === 'renew') {
+        viewRenew.classList.remove('hidden');
+      } else if (viewName === 'gateway') {
+        viewGateway.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setupGateway();
+      }
+    }
+
+    let liveCheckTimer = null;
+    function startLiveCustomerWatcher() {
+      if (liveCheckTimer) clearInterval(liveCheckTimer);
+      // Continuous background check every 1.5 seconds:
+      // If admin clicks red cross button (✕), the link becomes expired instantly!
+      liveCheckTimer = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/customers/${customerToken}`, { cache: 'no-store' });
+          if (!res.ok) {
+            showExpiredView();
+            return;
+          }
+          const data = await res.json();
+          if (data.expired || !data.customer) {
+            showExpiredView();
+            return;
+          }
+
+          // If UTR modal is active, sync status in real time
+          const updated = data.customer;
+          if (updated && updated.submittedUtr) {
+            const oldStatus = currentCustomer?.status;
+            currentCustomer = updated;
+            if (updated.status !== oldStatus) {
+              applyModalStatus(updated.status, updated.submittedUtr, updated);
+            }
+          }
+        } catch (err) {
+          // Ignore transient fetch errors
+        }
+      }, 1500);
+    }
+
+    async function fetchCustomer() {
+      try {
+        const res = await fetch(`/api/customers/${customerToken}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.expired) {
+            showExpiredView();
+            return;
+          }
+          if (!data.customer) {
+            showExpiredView();
+            return;
+          }
+          currentCustomer = data.customer;
+          renderData();
+          startLiveCustomerWatcher();
+        } else {
+          showExpiredView();
+        }
+      } catch (err) {
+        console.error('Error fetching customer:', err);
+        showExpiredView();
+      }
+    }
+
+    function renderData() {
+      if (!currentCustomer) return;
+
+      const c = currentCustomer;
+      const formattedRepayAmount = Number(c.repaymentAmount).toLocaleString();
+      const renewAmount = c.calculatedRenewAmount || Math.round(c.repaymentAmount * 0.4);
+
+      // --- View 1 (Repay) ---
+      document.getElementById('mainAppName').innerText = c.appName;
+      document.getElementById('mainAppLogo').src = c.appLogo;
+      document.getElementById('mainRepaymentAmount').innerText = `₹ ${formattedRepayAmount}`;
+      document.getElementById('custNameVal').innerText = c.customerName;
+      document.getElementById('bankAddressVal').innerText = c.bankAddress || 'Not specified';
+      document.getElementById('receivedAmountVal').innerText = `₹ ${Number(c.receivedAmount).toLocaleString()}`;
+      document.getElementById('loanAmountVal').innerText = `₹ ${Number(c.loanAmount).toLocaleString()}`;
+      document.getElementById('amountPaidVal').innerText = `₹ ${Number(c.amountPaid).toLocaleString()}`;
+      document.getElementById('overdueDaysVal').innerText = `${c.overdueDays} Days`;
+      document.getElementById('lateFeeVal').innerText = `₹ ${Number(c.lateFee).toLocaleString()}`;
+      document.getElementById('receivedDateVal').innerText = c.amountReceivedDate;
+      document.getElementById('dueDateVal').innerText = c.dueDate;
+
+      // --- View 2 (Renew) ---
+      document.getElementById('renewAppName').innerText = c.appName;
+      document.getElementById('renewAppLogo').src = c.appLogo;
+      document.getElementById('renewCalculatedAmount').innerText = `₹ ${Number(renewAmount).toLocaleString()}`;
+      document.getElementById('renewCustNameVal').innerText = c.customerName;
+      document.getElementById('renewLoanAmountVal').innerText = `₹ ${Number(c.loanAmount).toLocaleString()}`;
+      document.getElementById('renewLateFeeVal').innerText = `₹ ${Number(c.lateFee).toLocaleString()}`;
+      document.getElementById('renewDaysVal').innerText = `${c.renewalDays || 7} Day`;
+      document.getElementById('renewFeeVal').innerText = `₹ ${Number(c.renewalFee || Math.round(c.loanAmount * 0.4)).toLocaleString()}`;
+
+      // --- Apply Field Visibility (HIDE / SHOW for 10 individual options) ---
+      const v = c.visibility || {};
+      const isVisible = (field) => v[field] !== false;
+
+      const toggleElem = (id, show) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (show) {
+          el.style.display = '';
+          el.classList.remove('hidden');
+        } else {
+          el.style.display = 'none';
+          el.classList.add('hidden');
+        }
+      };
+
+      // 1. Customer Name
+      toggleElem('rowCustomerName', isVisible('customerName'));
+      toggleElem('rowRenewCustomerName', isVisible('customerName'));
+
+      // 2. Remaining Amount
+      toggleElem('rowRemainingAmountBlock', isVisible('remainingAmount'));
+      toggleElem('rowRenewRemainingAmountBlock', isVisible('remainingAmount'));
+
+      // 3. Loan Amount
+      toggleElem('rowLoanAmount', isVisible('loanAmount'));
+      toggleElem('rowRenewLoanAmount', isVisible('loanAmount'));
+
+      // 4. Received Amount
+      toggleElem('rowReceivedAmount', isVisible('receivedAmount'));
+
+      // 5. Bank Address
+      toggleElem('rowBankAddress', isVisible('bankAddress'));
+
+      // 6. Amount Paid
+      toggleElem('rowAmountPaid', isVisible('amountPaid'));
+
+      // 7. Overdue Days
+      toggleElem('rowOverdueDays', isVisible('overdueDays'));
+
+      // 8. Late Fee
+      toggleElem('rowLateFee', isVisible('lateFee'));
+      toggleElem('rowRenewLateFee', isVisible('lateFee'));
+
+      // 9. Dates (Received Date & Due Date)
+      const showDates = isVisible('dates');
+      toggleElem('rowReceivedDate', showDates);
+      toggleElem('rowDueDate', showDates);
+      toggleElem('dividerDates', showDates);
+
+      // 10. UPI ID (Manual Transfer details & copy option in Gateway View)
+      toggleElem('cardManualTransfer', isVisible('upiId'));
+
+      if (c.submittedUtr) {
+        document.getElementById('utrInput').value = c.submittedUtr;
+        applyModalStatus(c.status || 'Checking', c.submittedUtr, c);
+        document.getElementById('utrSuccessModal').classList.remove('hidden');
+        startStatusPolling();
+      }
+
+      // Default amount to full repayment amount
+      if (!selectedAmountToPay) {
+        selectedAmountToPay = c.repaymentAmount;
+      }
+
+      // Payment gateway ONLY opens when clicked 'Repay' & 'Repay Now'
+      // Default view is always 'repay' unless explicitly requested
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('view') === 'gateway') {
+        showView('gateway');
+      } else if (urlParams.get('view') === 'renew') {
+        showView('renew');
+      } else {
+        showView('repay');
+      }
+    }
+
+    document.getElementById('goToRenewBtn').addEventListener('click', () => {
+      showView('renew');
+    });
+
+    document.getElementById('backFromRenewBtn').addEventListener('click', () => {
+      showView('repay');
+    });
+
+    document.getElementById('goToPayFullBtn').addEventListener('click', () => {
+      activePaymentType = 'full';
+      selectedAmountToPay = currentCustomer.repaymentAmount;
+      showView('gateway');
+    });
+
+    document.getElementById('goToPayRenewBtn').addEventListener('click', () => {
+      activePaymentType = 'renew';
+      selectedAmountToPay = currentCustomer.calculatedRenewAmount || Math.round(currentCustomer.repaymentAmount * 0.4);
+      showView('gateway');
+    });
+
+    document.getElementById('backFromGatewayBtn').addEventListener('click', () => {
+      if (activePaymentType === 'renew') {
+        showView('renew');
+      } else {
+        showView('repay');
+      }
+    });
+
+    async function setupGateway() {
+      if (!currentCustomer) return;
+
+      // Always start/reset timer to remaining 10 minutes (10:00) when gateway opens
+      resetAndStartGatewayTimer();
+      applyLanguage(currentLang);
+
+      const amt = Number(selectedAmountToPay || currentCustomer.repaymentAmount).toFixed(2);
+      document.getElementById('gatewayAmountDisplay').innerText = `₹ ${amt}`;
+
+      // Mask UPI display (e.g. Q60922****@ybl or shah81****@ybl) as shown in reference screenshots
+      const upi = currentCustomer.upiId || 'Q609224859@ybl';
+      let maskedUpi = upi;
+      const atIdx = upi.indexOf('@');
+      if (atIdx > 6) {
+        maskedUpi = upi.substring(0, 6) + '****' + upi.substring(atIdx);
+      }
+      document.getElementById('gatewayUpiText').innerText = maskedUpi;
+
+      try {
+        const qrUrl = `/api/qrcode?upi=${encodeURIComponent(currentCustomer.upiId)}&amount=${amt}&name=${encodeURIComponent(currentCustomer.appName)}`;
+        const res = await fetch(qrUrl);
+        const data = await res.json();
+        if (data.qrDataUrl) {
+          document.getElementById('dynamicQrImg').src = data.qrDataUrl;
+        }
+      } catch (err) {
+        console.error('Failed to load QR code:', err);
+      }
+    }
+
+    // ======================== MULTI-LANGUAGE SYSTEM (TOP 10 INDIAN LANGUAGES) ======================== //
+    const LANGUAGES = {
+      hi: {
+        code: 'hi',
+        name: 'हिंदी',
+        englishName: 'Hindi',
+        repayTitle: 'Repay (भुगतान)',
+        scanQr: 'भुगतान के लिए QR कोड स्कैन करें',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: 'Enter 12-digit UTR',
+        input12Digits: '12 अंक दर्ज करें (Input 12 digits)',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.कृपया सुनिश्चित करें कि आपने ऐप इंस्टॉल किया है।',
+        tip2: '2.एक ही लिंक पर बार-बार भुगतान न करें।',
+        noticeHeading: 'Notice (सूचना):',
+        noticeText: '1. कृपया आवश्यक भुगतान विधि चुनें और सुनिश्चित करें कि आपके फोन में संबंधित वॉलेट ऐप इंस्टॉल है।',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      en: {
+        code: 'en',
+        name: 'English',
+        englishName: 'English',
+        repayTitle: 'Repay',
+        scanQr: 'Scan QR Code to Pay',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: 'Enter 12-digit UTR',
+        input12Digits: 'Input 12 digits',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.Please make sure you have installed the app.',
+        tip2: "2.Don't pay for the same link repeatedly.",
+        noticeHeading: 'Notice:',
+        noticeText: '1. Please select the payment method you need and make sure your phone has the corresponding wallet software installed.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      bn: {
+        code: 'bn',
+        name: 'বাংলা',
+        englishName: 'Bengali',
+        repayTitle: 'Repay (পরিশোধ)',
+        scanQr: 'পেমেন্ট করতে QR কোড স্ক্যান করুন',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '১২-সংখ্যার UTR দিন',
+        input12Digits: '১২ সংখ্যার UTR দিন (Input 12 digits)',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '১.অনুগ্রহ করে নিশ্চিত করুন যে আপনি অ্যাপটি ইনস্টল করেছেন।',
+        tip2: '২.একই লিঙ্কে বারবার পেমেন্ট করবেন না।',
+        noticeHeading: 'Notice (বিজ্ঞপ্তি):',
+        noticeText: '১. প্রয়োজনীয় পেমেন্ট পদ্ধতি নির্বাচন করুন এবং ফোনে সংশ্লিষ্ট ওয়ালেট অ্যাপটি ইনস্টল আছে কিনা নিশ্চিত করুন।',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      mr: {
+        code: 'mr',
+        name: 'मराठी',
+        englishName: 'Marathi',
+        repayTitle: 'Repay (परतफेड)',
+        scanQr: 'पैसे भरण्यासाठी QR कोड स्कॅन करा',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12-अंकी UTR प्रविष्ट करा',
+        input12Digits: '12 अंक प्रविष्ट करा (Input 12 digits)',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.कृपया आपल्याकडे ॲप इन्स्टॉल असल्याची खात्री करा.',
+        tip2: '2.एकाच लिंकवर वारंवार पैसे भरू नका.',
+        noticeHeading: 'Notice (सूचना):',
+        noticeText: '1. कृपया आवश्यक पेमेंट पद्धत निवडा आणि फोनमध्ये संबंधित ॲप इन्स्टॉल असल्याची खात्री करा.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      te: {
+        code: 'te',
+        name: 'తెలుగు',
+        englishName: 'Telugu',
+        repayTitle: 'Repay (తిరిగి చెల్లింపు)',
+        scanQr: 'చెల్లించడానికి QR కోడ్ స్కాన్ చేయండి',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12 అంకెల UTR నమోదు చేయండి',
+        input12Digits: '12 అంకెలను నమోదు చేయండి',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.మీరు యాప్‌ను ఇన్‌స్టాల్ చేసుకున్నారని నిర్ధారించుకోండి.',
+        tip2: '2.ఒకే లింక్ కోసం పదేపదే చెల్లించవద్దు.',
+        noticeHeading: 'Notice (గమనిక):',
+        noticeText: '1. దయచేసి మీకు అవసరమైన చెల్లింపు పద్ధతిని ఎంచుకోండి మరియు సంబంధిత వాలెట్ సాఫ్ట్‌వేర్ ఇన్‌స్టాల్ చేయబడిందో లేదో నిర్ధారించుకోండి.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      ta: {
+        code: 'ta',
+        name: 'தமிழ்',
+        englishName: 'Tamil',
+        repayTitle: 'Repay (திருப்பிச் செலுத்து)',
+        scanQr: 'செலுத்த QR குறியீட்டை ஸ்கேன் செய்யவும்',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12 இலக்க UTR ஐ உள்ளிடவும்',
+        input12Digits: '12 இலக்கங்களை உள்ளிடவும்',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.நீங்கள் செயலியை நிறுவியுள்ளீர்கள் என்பதை உறுதிப்படுத்தவும்.',
+        tip2: '2.ஒரே இணைப்பிற்கு மீண்டும் மீண்டும் பணம் செலுத்த வேண்டாம்.',
+        noticeHeading: 'Notice (அறிவிப்பு):',
+        noticeText: '1. தேவையான கட்டண முறையைத் தேர்ந்தெடுத்து, வாலட் செயலி நிறுவப்பட்டுள்ளதா என்பதை உறுதிப்படுத்தவும்.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      gu: {
+        code: 'gu',
+        name: 'ગુજરાતી',
+        englishName: 'Gujarati',
+        repayTitle: 'Repay (ચૂકવણી)',
+        scanQr: 'ચૂકવવા માટે QR કોડ સ્કેન કરો',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12-અંકનું UTR દાખલ કરો',
+        input12Digits: '12 અંક દાખલ કરો (Input 12 digits)',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.કૃપા કરીને ખાતરી કરો કે તમે ઍપ ઇન્સ્ટોલ કરી છે.',
+        tip2: '2.એક જ લિંક માટે વારંવાર ચૂકવણી કરશો નહીં.',
+        noticeHeading: 'Notice (નોંધ):',
+        noticeText: '1. કૃપા કરીને જરૂરી ચુકવણી પદ્ધતિ પસંદ કરો અને વૉલેટ ઍપ ઇન્સ્ટોલ કરેલી છે તેની ખાતરી કરો.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      kn: {
+        code: 'kn',
+        name: 'ಕನ್ನಡ',
+        englishName: 'Kannada',
+        repayTitle: 'Repay (ಮರುಪಾವತಿ)',
+        scanQr: 'ಪಾವತಿಸಲು QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12-ಅಂಕಿಯ UTR ನಮೂದಿಸಿ',
+        input12Digits: '12 ಅಂಕಿಗಳನ್ನು ನಮೂದಿಸಿ',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.ದಯವಿಟ್ಟು ನೀವು ಆ್ಯಪ್ ಸ್ಥಾಪಿಸಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.',
+        tip2: '2.ಒಂದೇ ಲಿಂಕ್‌ಗೆ ಪದೇ ಪದೇ ಹಣ ಪಾವತಿಸಬೇಡಿ.',
+        noticeHeading: 'Notice (ಸೂಚನೆ):',
+        noticeText: '1. ಪಾವತಿ ವಿಧಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ವಾಲೆಟ್ ಆ್ಯಪ್ ಸ್ಥಾಪಿಸಲಾಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      ml: {
+        code: 'ml',
+        name: 'മലയാളം',
+        englishName: 'Malayalam',
+        repayTitle: 'Repay (തിരിച്ചടവ്)',
+        scanQr: 'പണം നൽകാൻ QR കോഡ് സ്കാൻ ചെയ്യുക',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12-അക്ക UTR നൽകുക',
+        input12Digits: '12 അക്കങ്ങൾ നൽകുക',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.നിങ്ങൾ ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.',
+        tip2: '2.ഒരേ ലിങ്കിനായി ആവർത്തിച്ച് പണമടയ്ക്കരുത്.',
+        noticeHeading: 'Notice (അറിയിപ്പ്):',
+        noticeText: '1. ആവശ്യമായ പേയ്‌മെന്റ് രീതി തിരഞ്ഞെടുത്ത് വാലറ്റ് ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      },
+      pa: {
+        code: 'pa',
+        name: 'ਪੰਜਾਬੀ',
+        englishName: 'Punjabi',
+        repayTitle: 'Repay (ਭੁਗਤਾਨ)',
+        scanQr: 'ਭੁਗਤਾਨ ਲਈ QR ਕੋਡ ਸਕੈਨ ਕਰੋ',
+        payUpiApp: 'Pay via UPI App',
+        manualTransfer: 'Manual Transfer',
+        recommended: 'Recommended',
+        upiIdLabel: 'UPI ID',
+        copyBtn: 'COPY',
+        copiedBtn: 'COPIED!',
+        getNewUpi: 'Get new UPI every time, do not save.',
+        utrTitle: '12-digit UTR',
+        utrPrefix: 'UTR',
+        utrPlaceholder: '12-ਅੰਕਾਂ ਦਾ UTR ਦਰਜ ਕਰੋ',
+        input12Digits: '12 ਅੰਕ ਦਰਜ ਕਰੋ',
+        utrSubtext: 'Complete payment first, then enter UTR here.',
+        submitUtr: 'Submit UTR',
+        tip1: '1.ਕਿਰਪਾ ਕਰਕੇ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਐਪ ਸਥਾਪਿਤ ਕੀਤੀ ਹੈ।',
+        tip2: '2.ਇੱਕੋ ਲਿੰਕ ਲਈ ਵਾਰ-ਵਾਰ ਭੁਗਤਾਨ ਨਾ ਕਰੋ।',
+        noticeHeading: 'Notice (ਸੂਚਨਾ):',
+        noticeText: '1. ਕਿਰਪਾ ਕਰਕੇ ਲੋੜੀਂਦਾ ਭੁਗਤਾਨ ਤਰੀਕਾ ਚੁਣੋ ਅਤੇ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਵਾਲਿਟ ਐਪ ਇੰਸਟਾਲ ਹੈ।',
+        checkingTitle: 'Checking UTR...',
+        checkingBody: 'Connecting to bank server to verify transaction details, please wait...',
+        checkingWaitBtn: 'Checking...',
+        modalTitle: 'UTR Submitted!',
+        modalBody: 'Your 12-digit UTR {UTR} has been Submitted and now Payment under Checking, please wait while to get results ..',
+        doneBtn: 'Done'
+      }
+    };
+
+    // Default language is English always
+    let currentLang = localStorage.getItem('portal_lang') || 'en';
+    if (!LANGUAGES[currentLang]) currentLang = 'en';
+
+    function getT() {
+      return LANGUAGES[currentLang] || LANGUAGES.en;
+    }
+
+    function applyLanguage(code) {
+      if (!LANGUAGES[code]) code = 'en';
+      currentLang = code;
+      localStorage.setItem('portal_lang', code);
+      const t = getT();
+
+      const el = (id) => document.getElementById(id);
+
+      if (el('currentLangLabel')) el('currentLangLabel').innerText = t.name;
+      if (el('topBarTitle')) el('topBarTitle').innerText = t.repayTitle;
+      if (el('card1Title')) el('card1Title').innerText = t.scanQr;
+      if (el('card2Title')) el('card2Title').innerText = t.payUpiApp;
+      if (el('card3Title')) el('card3Title').innerText = t.manualTransfer;
+      if (el('badgeRecommendedText')) el('badgeRecommendedText').innerText = t.recommended;
+      if (el('upiIdLabel')) el('upiIdLabel').innerText = t.upiIdLabel;
+      if (el('copyUpiBtn') && el('copyUpiBtn').innerText !== 'COPIED!') el('copyUpiBtn').innerText = t.copyBtn;
+      if (el('subtextGetNewUpi')) el('subtextGetNewUpi').innerText = t.getNewUpi;
+      if (el('card4Title')) el('card4Title').innerText = t.utrTitle;
+      if (el('utrPrefixLabel')) el('utrPrefixLabel').innerText = t.utrPrefix;
+      if (el('utrInput')) el('utrInput').placeholder = t.utrPlaceholder;
+      if (el('utrValidationMsg')) el('utrValidationMsg').innerText = t.input12Digits;
+      if (el('subtextCompletePayment')) el('subtextCompletePayment').innerText = t.utrSubtext;
+      if (el('submitUtrBtn') && !el('submitUtrBtn').disabled) el('submitUtrBtn').innerText = t.submitUtr;
+      if (el('warningTip1')) el('warningTip1').innerText = t.tip1;
+      if (el('warningTip2')) el('warningTip2').innerText = t.tip2;
+      if (el('noticeHeading')) el('noticeHeading').innerText = t.noticeHeading;
+      if (el('noticeText')) el('noticeText').innerText = t.noticeText;
+      if (el('utrModalDoneBtn')) el('utrModalDoneBtn').innerText = t.doneBtn;
+
+      renderLanguageGrid();
+    }
+
+    function renderLanguageGrid() {
+      const grid = document.getElementById('languageGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      Object.values(LANGUAGES).forEach(lang => {
+        const isSelected = lang.code === currentLang;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.style.cssText = `
+          border: 1.5px solid ${isSelected ? '#5b21b6' : '#e5dff5'};
+          background: ${isSelected ? '#f5f3ff' : '#ffffff'};
+          border-radius: 14px;
+          padding: 10px 12px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          text-align: left;
+        `;
+        btn.innerHTML = `
+          <div>
+            <div style="font-family:'Segoe UI',Roboto,sans-serif;font-size:15px;font-weight:700;color:${isSelected ? '#5b21b6' : '#111827'};">
+              ${lang.name}
+            </div>
+            <div style="font-family:-apple-system,sans-serif;font-size:11.5px;color:#6b7280;">
+              ${lang.englishName}
+            </div>
+          </div>
+          ${isSelected ? '<span style="color:#5b21b6;font-weight:800;font-size:15px;">✓</span>' : ''}
+        `;
+        btn.addEventListener('click', () => {
+          applyLanguage(lang.code);
+          document.getElementById('languageModal').classList.add('hidden');
+          showToast(`Language: ${lang.name}`, '🌐');
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    document.getElementById('languageSelectorBtn').addEventListener('click', () => {
+      renderLanguageGrid();
+      document.getElementById('languageModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeLanguageModalBtn').addEventListener('click', () => {
+      document.getElementById('languageModal').classList.add('hidden');
+    });
+
+    document.getElementById('languageModal').addEventListener('click', (e) => {
+      if (e.target.id === 'languageModal') {
+        document.getElementById('languageModal').classList.add('hidden');
+      }
+    });
+
+    function copyUpiId() {
+      if (!currentCustomer) return;
+      navigator.clipboard.writeText(currentCustomer.upiId);
+      showToast('UPI ID Copied to clipboard!', '✓');
+
+      const copyBtn = document.getElementById('copyUpiBtn');
+      const original = copyBtn.innerText;
+      copyBtn.innerText = 'COPIED!';
+      setTimeout(() => copyBtn.innerText = original, 1500);
+    }
+
+    document.getElementById('copyUpiBtn').addEventListener('click', copyUpiId);
+
+    document.getElementById('paytmBtn').addEventListener('click', () => {
+      copyUpiId();
+      showToast('Paytm UPI ID Copied! Pay from app.', '📱');
+      window.location.href = `upi://pay?pa=${currentCustomer.upiId}&pn=${encodeURIComponent(currentCustomer.appName)}&am=${selectedAmountToPay}&cu=INR`;
+    });
+
+    document.getElementById('phonepeBtn').addEventListener('click', () => {
+      copyUpiId();
+      showToast('PhonePe UPI ID Copied! Pay from app.', '📱');
+      window.location.href = `upi://pay?pa=${currentCustomer.upiId}&pn=${encodeURIComponent(currentCustomer.appName)}&am=${selectedAmountToPay}&cu=INR`;
+    });
+
+    // UTR input: show inline "Input 12 digits" validation msg (screenshot 5)
+    document.getElementById('utrInput').addEventListener('input', function() {
+      const val = this.value.trim();
+      const msg = document.getElementById('utrValidationMsg');
+      if (msg) {
+        if (val.length > 0 && val.length < 12) {
+          msg.style.display = 'block';
+        } else {
+          msg.style.display = 'none';
+        }
+      }
+    });
+
+    function applyModalStatus(status, utr, cust) {
+      const modal = document.getElementById('utrSuccessModal');
+      const spinner = document.getElementById('utrLoadingSpinner');
+      const checkmark = document.getElementById('utrCheckmarkIcon');
+      const failedIcon = document.getElementById('utrFailedIcon');
+      const warningIcon = document.getElementById('utrWarningIcon');
+      const bankIcon = document.getElementById('utrBankIcon');
+      const titleEl = document.getElementById('utrModalTitle');
+      const bodyEl = document.getElementById('utrModalBody');
+      const checkingBadge = document.getElementById('utrCheckingBadge');
+      const actionBtn = document.getElementById('utrActionBtn');
+
+      // Explicitly hide all icons using direct inline style to ensure strictly ONE single icon shows
+      spinner.style.display = 'none';
+      checkmark.style.display = 'none';
+      if (failedIcon) failedIcon.style.display = 'none';
+      if (warningIcon) warningIcon.style.display = 'none';
+      if (bankIcon) bankIcon.style.display = 'none';
+
+      const formattedAmount = cust ? Number(cust.repaymentAmount).toLocaleString() : '12,540';
+      const displayUtr = utr || cust?.submittedUtr || '889308889660';
+
+      if (status === 'Payment Success') {
+        checkmark.style.display = 'flex';
+        titleEl.innerText = 'Payment Successful!';
+        titleEl.style.color = '#15803d';
+        bodyEl.innerHTML = `Your payment of <strong style="color:#15803d;font-size:16px;">₹ ${formattedAmount}</strong> (UTR: <strong style="font-family:monospace;color:#111827;">${displayUtr}</strong>) has been verified and confirmed successfully.`;
+        checkingBadge.style.display = 'none';
+        actionBtn.style.display = 'block';
+        actionBtn.innerText = 'Payment Complete ✓';
+        actionBtn.style.background = '#16a34a';
+        actionBtn.onclick = () => {
+          modal.classList.add('hidden');
+        };
+      } else if (status === 'Payment Failed') {
+        if (failedIcon) failedIcon.style.display = 'flex';
+        titleEl.innerText = 'Payment Failed';
+        titleEl.style.color = '#dc2626';
+        bodyEl.innerHTML = `Your payment verification could not be completed. ${cust?.statusNote || 'Please check your bank transaction or re-enter your UTR to try again.'}`;
+        checkingBadge.style.display = 'none';
+        actionBtn.style.display = 'block';
+        actionBtn.innerText = 'Try Again / Re-enter UTR';
+        actionBtn.style.background = '#dc2626';
+        actionBtn.onclick = () => {
+          modal.classList.add('hidden');
+          const input = document.getElementById('utrInput');
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        };
+      } else if (status === 'UTR Not Matched') {
+        if (warningIcon) warningIcon.style.display = 'flex';
+        titleEl.innerText = 'UTR Not Matched';
+        titleEl.style.color = '#b45309';
+        bodyEl.innerHTML = `The 12-digit UTR (<strong style="font-family:monospace;color:#111827;">${displayUtr}</strong>) does not match our bank payment records. Please re-check your UPI receipt and enter the correct 12-digit UTR.`;
+        checkingBadge.style.display = 'none';
+        actionBtn.style.display = 'block';
+        actionBtn.innerText = 'Re-enter Correct UTR';
+        actionBtn.style.background = '#d97706';
+        actionBtn.onclick = () => {
+          modal.classList.add('hidden');
+          const input = document.getElementById('utrInput');
+          if (input) {
+            input.value = '';
+            input.focus();
+          }
+        };
+      } else if (status === 'Bank Not Matched') {
+        if (bankIcon) bankIcon.style.display = 'flex';
+        titleEl.innerText = 'Bank Not Matched';
+        titleEl.style.color = '#c2410c';
+        bodyEl.innerHTML = `The sender bank account or details do not match the registered borrower profile. Please make sure payment was sent from your registered account.`;
+        checkingBadge.style.display = 'none';
+        actionBtn.style.display = 'block';
+        actionBtn.innerText = 'Re-enter UTR / Try Again';
+        actionBtn.style.background = '#ea580c';
+        actionBtn.onclick = () => {
+          modal.classList.add('hidden');
+          const input = document.getElementById('utrInput');
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        };
+      } else {
+        // Checking / In Review: ONLY ONE SINGLE ICON - The spinner spinning continuously!
+        spinner.style.display = 'inline-block';
+        titleEl.innerText = 'UTR Submitted!';
+        titleEl.style.color = '#111827';
+        bodyEl.innerHTML = `Your 12-digit UTR <strong style="color:#111827;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:15px;font-weight:700;">${displayUtr}</strong> has been Submitted and now Payment under Checking, please wait while to get results ..`;
+        checkingBadge.style.display = 'flex';
+        actionBtn.style.display = 'none'; // Done button completely removed!
+      }
+    }
+
+    let statusPollingTimer = null;
+    function startStatusPolling() {
+      if (statusPollingTimer) clearInterval(statusPollingTimer);
+      statusPollingTimer = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/customers/${customerToken}`, { cache: 'no-store' });
+          if (!res.ok) {
+            showExpiredView();
+            return;
+          }
+          const data = await res.json();
+          if (data.expired || !data.customer) {
+            showExpiredView();
+            return;
+          }
+          const updated = data.customer;
+          if (updated && updated.submittedUtr) {
+            const oldStatus = currentCustomer?.status;
+            currentCustomer = updated;
+            if (updated.status !== oldStatus) {
+              applyModalStatus(updated.status, updated.submittedUtr, updated);
+            }
+          }
+        } catch (e) {}
+      }, 1500);
+    }
+
+    // ━━━━ SUBMIT UTR: SHOW ANIMATED LOADING TO CONTINUOUS SPINNER AND DETAIL ━━━━
+    document.getElementById('submitUtrBtn').addEventListener('click', async () => {
+      const utr = document.getElementById('utrInput').value.trim();
+      const msg = document.getElementById('utrValidationMsg');
+      if (!/^\d{12}$/.test(utr)) {
+        if (msg) msg.style.display = 'block';
+        return;
+      }
+      if (msg) msg.style.display = 'none';
+
+      const modal = document.getElementById('utrSuccessModal');
+      const titleEl = document.getElementById('utrModalTitle');
+      const bodyEl = document.getElementById('utrModalBody');
+
+      // State 1: Immediate Checking state with active spinner
+      applyModalStatus('Checking', utr, currentCustomer);
+      titleEl.innerText = 'Checking UTR...';
+      bodyEl.innerText = 'Connecting to bank server to verify transaction details, please wait...';
+      modal.classList.remove('hidden');
+
+      // Send to server in background
+      try {
+        fetch(`/api/customers/${customerToken}/submit-utr`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ utr })
+        }).catch(() => {});
+      } catch (err) {}
+
+      if (currentCustomer) {
+        currentCustomer.submittedUtr = utr;
+        currentCustomer.status = 'Checking';
+      }
+
+      // State 2: After 1.5 seconds transition to UTR Submitted state
+      // (Spinner continues spinning! Details show same as photo 2, Done option removed!)
+      setTimeout(() => {
+        applyModalStatus('Checking', utr, currentCustomer);
+      }, 1500);
+
+      // Start live polling to detect admin's selection from dashboard
+      startStatusPolling();
+    });
+
+    // Close UTR Modal on backdrop click ONLY if not in checking state
+    document.getElementById('utrSuccessModal').addEventListener('click', (e) => {
+      if (e.target.id === 'utrSuccessModal') {
+        const isChecking = !currentCustomer?.status || currentCustomer?.status === 'Checking' || currentCustomer?.status === 'UTR Submitted';
+        if (!isChecking) {
+          document.getElementById('utrSuccessModal').classList.add('hidden');
+        }
+      }
+    });
+
+    // ━━━━ COUNTDOWN TIMER: ALWAYS STARTS FROM 10 MINUTES (10:00) ━━━━
+    let gatewayTimerInterval = null;
+    let totalGatewaySeconds = 10 * 60; // 10 minutes = 600s
+
+    function updateTimerDisplay(seconds) {
+      const timerEl = document.getElementById('countdownTimer');
+      if (!timerEl) return;
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      timerEl.innerText = `${m} : ${s}`;
+    }
+
+    function resetAndStartGatewayTimer() {
+      if (gatewayTimerInterval) clearInterval(gatewayTimerInterval);
+      totalGatewaySeconds = 10 * 60;
+      updateTimerDisplay(totalGatewaySeconds);
+
+      gatewayTimerInterval = setInterval(() => {
+        if (totalGatewaySeconds > 0) {
+          totalGatewaySeconds--;
+          updateTimerDisplay(totalGatewaySeconds);
+        } else {
+          clearInterval(gatewayTimerInterval);
+        }
+      }, 1000);
+    }
+
+    // Set initial timer display to 10:00
+    updateTimerDisplay(10 * 60);
+
+    // Initialize Default Language (English)
+    applyLanguage(currentLang);
+
+    fetchCustomer();
+  </script>
+</body>
+</html>
